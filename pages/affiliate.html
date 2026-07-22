@@ -1,556 +1,707 @@
 <!DOCTYPE html>
 <html lang="fr">
 <head>
-  <meta charset="UTF-8" /><meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Mon espace — Crush Affi</title>
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet" />
-  <link rel="stylesheet" href="../css/style.css" />
   <style>
-    /* ---- PAGE LOGIN CUSTOM ---- */
-    .aff-login-screen {
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    :root {
+      --bg: #0a0a0a;
+      --surface: #111;
+      --surface2: #161616;
+      --border: #1f1f1f;
+      --border2: #2a2a2a;
+      --accent: #8afd3a;
+      --accent-dim: rgba(138,253,58,.12);
+      --accent-border: rgba(138,253,58,.25);
+      --text: #fff;
+      --text-2: #aaa;
+      --text-3: #555;
+      --green: #22c55e;
+      --red: #ef4444;
+      --yellow: #f59e0b;
+      --radius: 18px;
+      --radius-sm: 12px;
+    }
+    body {
+      font-family: 'Inter', system-ui, sans-serif;
+      background: var(--bg);
+      color: var(--text);
       min-height: 100vh;
-      display: flex;
-      align-items: stretch;
-      background: #0a0a0a;
-      overflow: hidden;
+      font-size: 14px;
+      -webkit-font-smoothing: antialiased;
     }
 
-    /* Colonne gauche — branding */
-    .aff-login-left {
+    /* ── LOGIN ── */
+    .login-wrap {
+      min-height: 100vh;
+      display: flex;
+      background: var(--bg);
+    }
+    .login-left {
       flex: 1;
       display: flex;
       flex-direction: column;
       justify-content: center;
-      padding: 60px 64px;
+      padding: 64px 72px;
       position: relative;
       overflow: hidden;
     }
-
-    /* Cercles décoratifs en fond */
-    .aff-login-left::before {
+    .login-left::before {
       content: '';
       position: absolute;
-      width: 500px; height: 500px;
+      width: 600px; height: 600px;
       border-radius: 50%;
-      background: radial-gradient(circle, rgba(138,253,58,.15) 0%, transparent 70%);
-      top: -100px; left: -100px;
+      background: radial-gradient(circle, rgba(138,253,58,.1) 0%, transparent 65%);
+      top: -150px; left: -150px;
       pointer-events: none;
     }
-    .aff-login-left::after {
+    .login-left::after {
       content: '';
       position: absolute;
-      width: 350px; height: 350px;
+      width: 400px; height: 400px;
       border-radius: 50%;
-      background: radial-gradient(circle, rgba(138,253,58,.08) 0%, transparent 70%);
-      bottom: -60px; right: -60px;
+      background: radial-gradient(circle, rgba(138,253,58,.06) 0%, transparent 65%);
+      bottom: -80px; right: 0;
       pointer-events: none;
     }
-
-    .aff-brand-tag {
-      display: inline-flex;
-      align-items: center;
-      gap: 8px;
-      background: rgba(138,253,58,.1);
-      border: 1px solid rgba(138,253,58,.25);
+    .login-pill {
+      display: inline-flex; align-items: center; gap: 8px;
+      background: var(--accent-dim);
+      border: 1px solid var(--accent-border);
       border-radius: 99px;
       padding: 6px 14px;
-      font-size: .75rem;
-      font-weight: 700;
-      color: #8afd3a;
-      letter-spacing: .06em;
-      text-transform: uppercase;
-      margin-bottom: 32px;
-      width: fit-content;
+      font-size: .72rem; font-weight: 700; color: var(--accent);
+      letter-spacing: .08em; text-transform: uppercase;
+      margin-bottom: 36px; width: fit-content;
     }
-    .aff-brand-tag span {
-      width: 6px; height: 6px;
-      border-radius: 50%;
-      background: #8afd3a;
+    .login-pill-dot {
+      width: 6px; height: 6px; border-radius: 50%;
+      background: var(--accent);
       animation: pulse 1.8s infinite;
     }
-
-    .aff-login-title {
-      font-size: 3rem;
-      font-weight: 900;
-      color: #fff;
-      line-height: 1.1;
-      letter-spacing: -1.5px;
-      margin-bottom: 20px;
+    @keyframes pulse { 0%,100%{opacity:1;transform:scale(1)} 50%{opacity:.4;transform:scale(.8)} }
+    .login-h1 {
+      font-size: 3.2rem; font-weight: 900; color: #fff;
+      line-height: 1.08; letter-spacing: -2px; margin-bottom: 20px;
     }
-    .aff-login-title em {
-      font-style: normal;
-      color: #8afd3a;
+    .login-h1 em { font-style: normal; color: var(--accent); }
+    .login-sub {
+      font-size: .95rem; color: #444; line-height: 1.8;
+      max-width: 400px; margin-bottom: 48px;
     }
-
-    .aff-login-desc {
-      font-size: .95rem;
-      color: #666;
-      line-height: 1.7;
-      max-width: 380px;
-      margin-bottom: 40px;
-    }
-
-    .aff-app-link {
-      display: inline-flex;
-      align-items: center;
-      gap: 12px;
-      background: #151515;
-      border: 1px solid #2a2a2a;
-      border-radius: 14px;
-      padding: 14px 18px;
-      text-decoration: none;
-      transition: border-color .15s, background .15s;
+    .store-btn {
+      display: inline-flex; align-items: center; gap: 14px;
+      background: #111; border: 1px solid #222;
+      border-radius: 16px; padding: 14px 20px;
+      text-decoration: none; transition: border-color .15s, background .15s;
       width: fit-content;
     }
-    .aff-app-link:hover {
-      border-color: rgba(138,253,58,.3);
-      background: #1a1a1a;
-    }
-    .aff-app-link-icon {
-      width: 40px; height: 40px;
-      border-radius: 10px;
-      background: linear-gradient(135deg, #8afd3a, #4db800);
+    .store-btn:hover { border-color: var(--accent-border); background: #161616; }
+    .store-icon {
+      width: 42px; height: 42px; border-radius: 11px;
+      background: linear-gradient(135deg, var(--accent), #4db800);
       display: flex; align-items: center; justify-content: center;
-      font-size: 1.2rem;
-      flex-shrink: 0;
+      font-size: 1.3rem; flex-shrink: 0;
     }
-    .aff-app-link-text {
-      display: flex;
-      flex-direction: column;
-    }
-    .aff-app-link-label {
-      font-size: .68rem;
-      color: #555;
-      font-weight: 600;
-      text-transform: uppercase;
-      letter-spacing: .05em;
-    }
-    .aff-app-link-name {
-      font-size: .9rem;
-      color: #fff;
-      font-weight: 700;
-      margin-top: 1px;
-    }
+    .store-label { font-size: .65rem; color: #444; font-weight: 600; text-transform: uppercase; letter-spacing: .05em; }
+    .store-name  { font-size: .88rem; color: #fff; font-weight: 700; margin-top: 2px; }
 
-    /* Colonne droite — formulaire */
-    .aff-login-right {
-      width: 440px;
-      flex-shrink: 0;
-      background: #fff;
-      display: flex;
-      flex-direction: column;
+    /* ── LOGIN FORM PANEL ── */
+    .login-right {
+      width: 460px; flex-shrink: 0;
+      background: #0d0d0d;
+      border-left: 1px solid var(--border);
+      display: flex; flex-direction: column;
       justify-content: center;
-      padding: 60px 48px;
-      border-radius: 28px 0 0 28px;
-      position: relative;
+      padding: 64px 52px;
     }
+    .lf-brand { font-size: 1.1rem; font-weight: 900; color: #fff; letter-spacing: -.5px; margin-bottom: 44px; }
+    .lf-brand span { color: var(--accent); }
+    .lf-title { font-size: 1.6rem; font-weight: 900; color: #fff; letter-spacing: -.6px; margin-bottom: 6px; }
+    .lf-sub { font-size: .87rem; color: #444; margin-bottom: 36px; }
+    .lf-label {
+      display: block; font-size: .68rem; font-weight: 700;
+      color: #444; text-transform: uppercase; letter-spacing: .08em; margin-bottom: 8px;
+    }
+    .lf-input {
+      width: 100%; padding: 14px 18px;
+      background: #111; border: 1.5px solid #222;
+      border-radius: 12px; color: #fff;
+      font-size: .95rem; font-family: inherit;
+      transition: border .15s, box-shadow .15s;
+      caret-color: var(--accent);
+    }
+    .lf-input::placeholder { color: #333; }
+    .lf-input:focus { outline: none; border-color: var(--accent); box-shadow: 0 0 0 3px rgba(138,253,58,.1); }
+    .lf-input.err { border-color: var(--red); }
+    .lf-btn {
+      width: 100%; padding: 15px; margin-top: 20px;
+      background: var(--accent); color: #000;
+      border: none; border-radius: 12px;
+      font-size: .95rem; font-weight: 800;
+      cursor: pointer; font-family: inherit;
+      transition: background .15s, transform .1s, box-shadow .15s;
+      display: flex; align-items: center; justify-content: center; gap: 8px;
+    }
+    .lf-btn:hover { background: #72e020; transform: translateY(-1px); box-shadow: 0 6px 24px rgba(138,253,58,.25); }
+    .lf-btn:active { transform: none; box-shadow: none; }
+    .lf-err {
+      display: flex; align-items: center; gap: 8px;
+      background: rgba(239,68,68,.08); border: 1px solid rgba(239,68,68,.2);
+      border-radius: 10px; padding: 10px 14px;
+      margin-top: 14px; font-size: .82rem; color: #f87171; font-weight: 600;
+    }
+    .lf-note { margin-top: 32px; padding-top: 24px; border-top: 1px solid #181818; font-size: .77rem; color: #333; text-align: center; line-height: 1.7; }
 
-    .aff-form-logo {
-      font-size: 1.1rem;
-      font-weight: 900;
-      color: #0a0a0a;
-      letter-spacing: -.5px;
-      margin-bottom: 36px;
+    /* ── DASHBOARD LAYOUT ── */
+    .dash { display: flex; min-height: 100vh; }
+    .dash-sidebar {
+      width: 260px; flex-shrink: 0;
+      background: #0d0d0d;
+      border-right: 1px solid var(--border);
+      display: flex; flex-direction: column;
+      position: sticky; top: 0; height: 100vh; overflow-y: auto;
     }
-    .aff-form-logo span { color: #8afd3a; }
+    .ds-top { padding: 28px 22px 20px; border-bottom: 1px solid var(--border); }
+    .ds-brand { font-size: 1.1rem; font-weight: 900; color: var(--accent); letter-spacing: -.5px; }
+    .ds-brand small { display: block; font-size: .62rem; color: #333; font-weight: 500; text-transform: uppercase; letter-spacing: .06em; margin-top: 3px; }
+    .ds-user {
+      margin: 16px 12px 0;
+      padding: 14px 14px;
+      background: #111; border: 1px solid var(--border);
+      border-radius: 14px;
+    }
+    .ds-user-avatar {
+      width: 36px; height: 36px; border-radius: 10px;
+      background: linear-gradient(135deg, var(--accent), #4db800);
+      display: flex; align-items: center; justify-content: center;
+      font-size: .95rem; font-weight: 900; color: #000;
+      margin-bottom: 10px;
+    }
+    .ds-user-name { font-size: .9rem; font-weight: 700; color: #fff; }
+    .ds-user-email { font-size: .7rem; color: #444; margin-top: 2px; word-break: break-all; }
 
-    .aff-form-title {
-      font-size: 1.5rem;
-      font-weight: 800;
-      color: #0a0a0a;
-      letter-spacing: -.5px;
-      margin-bottom: 6px;
+    .ds-nav { flex: 1; padding: 12px 10px; }
+    .ds-nav-group { font-size: .6rem; font-weight: 700; color: #2a2a2a; text-transform: uppercase; letter-spacing: .12em; padding: 14px 12px 5px; }
+    .ds-nav-link {
+      display: flex; align-items: center; gap: 10px;
+      padding: 10px 14px; border-radius: 10px;
+      color: #444; text-decoration: none; font-size: .87rem; font-weight: 500;
+      transition: background .12s, color .12s; margin-bottom: 2px; cursor: pointer;
     }
-    .aff-form-sub {
-      font-size: .87rem;
-      color: #999;
-      margin-bottom: 36px;
+    .ds-nav-link:hover { background: #161616; color: #aaa; }
+    .ds-nav-link.active { background: var(--accent-dim); color: var(--accent); font-weight: 700; border: 1px solid var(--accent-border); }
+    .ds-nav-icon { width: 16px; text-align: center; opacity: .6; }
+    .ds-nav-link.active .ds-nav-icon { opacity: 1; }
+    .ds-footer { padding: 14px 10px 20px; border-top: 1px solid var(--border); }
+    .ds-logout {
+      width: 100%; padding: 10px 14px; background: none;
+      border: 1px solid #1a1a1a; border-radius: 10px;
+      color: #333; font-size: .83rem; font-weight: 600;
+      cursor: pointer; font-family: inherit; text-align: left;
+      transition: all .15s;
     }
+    .ds-logout:hover { background: rgba(239,68,68,.06); color: var(--red); border-color: rgba(239,68,68,.2); }
 
-    .aff-field { margin-bottom: 18px; }
-    .aff-field label {
-      display: block;
-      font-size: .74rem;
-      font-weight: 700;
-      color: #aaa;
-      text-transform: uppercase;
-      letter-spacing: .06em;
-      margin-bottom: 8px;
+    /* ── MAIN ── */
+    .dash-main { flex: 1; overflow-y: auto; background: var(--bg); }
+    .dash-header {
+      padding: 32px 40px 0;
+      display: flex; align-items: flex-start; justify-content: space-between;
     }
-    .aff-field input {
-      width: 100%;
-      padding: 14px 16px;
-      border: 2px solid #ebebeb;
-      border-radius: 12px;
-      background: #fafafa;
-      color: #0a0a0a;
-      font-size: .95rem;
-      font-family: inherit;
-      transition: border .15s, box-shadow .15s, background .15s;
-    }
-    .aff-field input:focus {
-      outline: none;
-      border-color: #8afd3a;
-      background: #fff;
-      box-shadow: 0 0 0 4px rgba(138,253,58,.15);
-    }
+    .dash-header-title { font-size: 1.55rem; font-weight: 900; letter-spacing: -.6px; }
+    .dash-header-sub { font-size: .84rem; color: #444; margin-top: 4px; }
+    .dash-content { padding: 28px 40px 48px; }
 
-    .aff-btn-login {
-      width: 100%;
-      padding: 15px;
-      background: #0a0a0a;
-      color: #8afd3a;
-      border: none;
-      border-radius: 12px;
-      font-size: .95rem;
-      font-weight: 800;
-      cursor: pointer;
-      font-family: inherit;
-      letter-spacing: -.2px;
-      transition: background .15s, transform .1s;
-      margin-top: 4px;
+    /* ── STAT CARDS ── */
+    .stat-grid { display: grid; grid-template-columns: repeat(3,1fr); gap: 12px; margin-bottom: 24px; }
+    .sc {
+      background: var(--surface); border: 1px solid var(--border);
+      border-radius: var(--radius); padding: 22px 22px 20px;
+      position: relative; overflow: hidden;
+      transition: border-color .15s, transform .15s;
     }
-    .aff-btn-login:hover {
-      background: #1a1a1a;
-      transform: translateY(-1px);
+    .sc:hover { border-color: var(--border2); transform: translateY(-2px); }
+    .sc-accent { border-color: var(--accent-border); background: var(--accent-dim); }
+    .sc-glow::after {
+      content: ''; position: absolute;
+      top: 0; left: 0; right: 0; height: 2px;
+      background: var(--accent); border-radius: 2px 2px 0 0;
     }
-    .aff-btn-login:active { transform: translateY(0); }
+    .sc-label { font-size: .65rem; font-weight: 700; color: #444; text-transform: uppercase; letter-spacing: .1em; margin-bottom: 12px; }
+    .sc-value { font-size: 2rem; font-weight: 900; letter-spacing: -1.5px; line-height: 1; color: #fff; }
+    .sc-value.green { color: var(--green); }
+    .sc-value.accent { color: var(--accent); }
+    .sc-sub { font-size: .72rem; color: #333; margin-top: 6px; }
 
-    .aff-error {
-      color: #dc2626;
-      font-size: .82rem;
-      font-weight: 600;
-      margin-top: 12px;
-      text-align: center;
+    /* ── BLOCKS ── */
+    .block {
+      background: var(--surface); border: 1px solid var(--border);
+      border-radius: var(--radius); margin-bottom: 14px; overflow: hidden;
     }
+    .block-head {
+      padding: 14px 20px; border-bottom: 1px solid var(--border);
+      display: flex; align-items: center; justify-content: space-between;
+    }
+    .block-title { font-size: .65rem; font-weight: 800; text-transform: uppercase; letter-spacing: .1em; color: #444; }
+    .block-body { padding: 20px; }
 
-    .aff-footer-note {
-      margin-top: 32px;
-      padding-top: 24px;
-      border-top: 1px solid #f0f0f0;
-      font-size: .78rem;
-      color: #bbb;
-      text-align: center;
-      line-height: 1.6;
+    /* ── LINK BOX ── */
+    .link-box {
+      display: flex; align-items: center; gap: 10px;
+      background: #0d0d0d; border: 1.5px solid var(--border2);
+      border-radius: 12px; padding: 4px 4px 4px 16px;
     }
-    .aff-footer-note a {
-      color: #8afd3a;
-      text-decoration: none;
-      font-weight: 700;
+    .link-box input {
+      flex: 1; background: none; border: none; color: #888;
+      font-size: .84rem; font-family: 'Inter', monospace;
+      outline: none; min-width: 0;
     }
+    .link-copy {
+      padding: 9px 16px; background: var(--accent); color: #000;
+      border: none; border-radius: 9px; font-size: .8rem; font-weight: 800;
+      cursor: pointer; font-family: inherit; transition: background .15s; white-space: nowrap; flex-shrink: 0;
+    }
+    .link-copy:hover { background: #72e020; }
 
-    /* Mobile */
+    /* ── PROGRESS ── */
+    .prog-wrap { background: #161616; border-radius: 99px; height: 8px; overflow: hidden; margin: 12px 0 8px; }
+    .prog-fill { height: 100%; background: var(--accent); border-radius: 99px; transition: width .7s cubic-bezier(.4,0,.2,1); min-width: 3px; }
+    .prog-label { font-size: .77rem; color: #444; }
+
+    /* ── PLATFORM BARS ── */
+    .plat-row { display: flex; align-items: center; gap: 12px; margin-bottom: 10px; }
+    .plat-row:last-child { margin-bottom: 0; }
+    .plat-name { width: 60px; font-size: .82rem; font-weight: 700; color: #888; }
+    .plat-track { flex: 1; height: 6px; background: #161616; border-radius: 99px; overflow: hidden; }
+    .plat-fill { height: 100%; border-radius: 99px; }
+    .plat-pct { width: 70px; text-align: right; font-size: .75rem; color: #444; }
+
+    /* ── ACTIVITY ── */
+    .act-item {
+      display: flex; align-items: center; gap: 10px; flex-wrap: wrap;
+      padding: 11px 0; border-bottom: 1px solid var(--border); font-size: .84rem;
+    }
+    .act-item:last-child { border-bottom: none; }
+    .act-time { margin-left: auto; font-size: .72rem; color: #333; }
+    .plat-tag {
+      padding: 3px 10px; border-radius: 99px; font-size: .69rem; font-weight: 700;
+    }
+    .plat-ios     { background: rgba(99,102,241,.15); color: #818cf8; }
+    .plat-android { background: rgba(16,185,129,.15); color: #34d399; }
+    .plat-pc      { background: rgba(245,158,11,.15); color: #fbbf24; }
+
+    /* ── BADGE ── */
+    .badge { display: inline-block; padding: 4px 12px; border-radius: 99px; font-size: .71rem; font-weight: 700; }
+    .badge-green  { background: rgba(34,197,94,.12);  color: var(--green); border: 1px solid rgba(34,197,94,.2); }
+    .badge-yellow { background: rgba(245,158,11,.12); color: var(--yellow); border: 1px solid rgba(245,158,11,.2); }
+    .badge-red    { background: rgba(239,68,68,.12);  color: var(--red);   border: 1px solid rgba(239,68,68,.2); }
+    .earn-pill    { background: var(--accent-dim); color: var(--accent); border: 1px solid var(--accent-border); padding: 3px 11px; border-radius: 99px; font-size: .77rem; font-weight: 800; }
+
+    /* ── FORMS ── */
+    .f-section { font-size: .63rem; font-weight: 800; text-transform: uppercase; letter-spacing: .1em; color: #2a2a2a; margin: 22px 0 12px; padding-top: 18px; border-top: 1px solid var(--border); }
+    .f-section:first-child { margin-top: 0; padding-top: 0; border-top: none; }
+    .f-row { margin-bottom: 14px; }
+    .f-row label { display: block; font-size: .68rem; font-weight: 700; color: #444; text-transform: uppercase; letter-spacing: .06em; margin-bottom: 7px; }
+    .f-row input, .f-row select {
+      width: 100%; padding: 12px 14px;
+      background: #111; border: 1.5px solid #1f1f1f;
+      border-radius: 10px; color: #fff; font-size: .92rem; font-family: inherit;
+      transition: border .15s, box-shadow .15s;
+    }
+    .f-row input::placeholder { color: #333; }
+    .f-row input:focus, .f-row select:focus { outline: none; border-color: var(--accent); box-shadow: 0 0 0 3px rgba(138,253,58,.08); }
+    .f-row select option { background: #111; }
+    .f-btn {
+      padding: 11px 22px; background: var(--accent); color: #000;
+      border: none; border-radius: 10px; font-size: .88rem; font-weight: 800;
+      cursor: pointer; font-family: inherit; transition: background .15s, transform .1s;
+    }
+    .f-btn:hover { background: #72e020; transform: translateY(-1px); }
+    .method-ok { background: rgba(34,197,94,.08); border: 1px solid rgba(34,197,94,.2); border-radius: 10px; padding: 10px 14px; font-size: .82rem; color: var(--green); margin-bottom: 14px; }
+    .method-warn { background: rgba(245,158,11,.08); border: 1px solid rgba(245,158,11,.2); border-radius: 10px; padding: 10px 14px; font-size: .82rem; color: var(--yellow); margin-bottom: 14px; }
+    .method-warn a { color: var(--yellow); font-weight: 700; }
+    .success-card {
+      background: rgba(34,197,94,.06); border: 1px solid rgba(34,197,94,.2);
+      border-radius: var(--radius); padding: 28px;
+    }
+    .success-card h3 { color: var(--green); margin-bottom: 10px; font-size: 1rem; font-weight: 800; }
+    .success-card p { font-size: .84rem; color: #444; margin-bottom: 6px; }
+    .f-btn-sec {
+      padding: 10px 20px; background: none; color: #444;
+      border: 1px solid var(--border2); border-radius: 10px; font-size: .85rem; font-weight: 600;
+      cursor: pointer; font-family: inherit; transition: all .15s; margin-top: 14px;
+    }
+    .f-btn-sec:hover { color: #fff; border-color: #444; }
+    .save-ok { color: var(--green); font-size: .8rem; margin-top: 10px; display: none; }
+
+    /* ── MOBILE ── */
+    .mob-bar {
+      display: none; position: fixed; top: 0; left: 0; right: 0; z-index: 200;
+      height: 58px; background: #0d0d0d; border-bottom: 1px solid var(--border);
+      padding: 0 16px; align-items: center; justify-content: space-between;
+    }
+    .mob-brand-txt { font-size: 1rem; font-weight: 900; color: var(--accent); }
+    .mob-burger { width: 36px; height: 36px; background: #161616; border: 1px solid var(--border2); border-radius: 8px; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 4px; cursor: pointer; border-style: solid; }
+    .mob-burger span { width: 14px; height: 1.5px; background: #888; border-radius: 2px; transition: all .2s; }
+    .mob-burger.open span:nth-child(1) { transform: rotate(45deg) translate(4px, 4px); }
+    .mob-burger.open span:nth-child(2) { opacity: 0; }
+    .mob-burger.open span:nth-child(3) { transform: rotate(-45deg) translate(4px, -4px); }
+    .mob-drawer {
+      display: none; position: fixed; top: 58px; left: 0; right: 0; bottom: 0; z-index: 190;
+      background: #0d0d0d; border-top: 1px solid var(--border); padding: 16px; overflow-y: auto;
+    }
+    .mob-drawer.open { display: block; }
+    .mob-nav-link {
+      display: flex; align-items: center; gap: 10px;
+      padding: 13px 16px; border-radius: 12px;
+      color: #555; text-decoration: none; font-size: .9rem; font-weight: 600;
+      transition: background .1s, color .1s; margin-bottom: 4px; cursor: pointer;
+    }
+    .mob-nav-link:hover { background: #161616; color: #aaa; }
+    .mob-nav-link.active { background: var(--accent-dim); color: var(--accent); border: 1px solid var(--accent-border); }
+    .mob-sep { height: 1px; background: var(--border); margin: 12px 0; }
+    .mob-logout { display: block; width: 100%; padding: 13px 16px; background: none; border: none; color: #333; font-size: .88rem; font-weight: 600; cursor: pointer; font-family: inherit; text-align: left; border-radius: 12px; transition: all .12s; }
+    .mob-logout:hover { background: rgba(239,68,68,.06); color: var(--red); }
+    .hidden { display: none !important; }
+    @media (max-width: 900px) {
+      .login-left { display: none; }
+      .login-right { width: 100%; border-left: none; padding: 48px 28px; }
+    }
     @media (max-width: 768px) {
-      .aff-login-screen { flex-direction: column; }
-      .aff-login-left {
-        padding: 48px 28px 36px;
-        flex: none;
-      }
-      .aff-login-title { font-size: 2rem; }
-      .aff-login-right {
-        width: 100%;
-        border-radius: 24px 24px 0 0;
-        padding: 40px 28px 48px;
-        flex: 1;
-      }
-      .aff-app-link { display: none; }
+      .mob-bar { display: flex; }
+      .dash-sidebar { display: none; }
+      .dash-main { padding-top: 58px; }
+      .dash-header { padding: 24px 20px 0; }
+      .dash-content { padding: 20px 20px 40px; }
+      .stat-grid { grid-template-columns: 1fr 1fr; }
+    }
+    @media (max-width: 480px) {
+      .stat-grid { grid-template-columns: 1fr; }
+      .lf-title { font-size: 1.3rem; }
     }
   </style>
 </head>
 <body>
 
-  <div id="login-screen" class="aff-login-screen">
-
-    <!-- Gauche : branding -->
-    <div class="aff-login-left">
-      <div class="aff-brand-tag"><span></span>Programme affilié</div>
-
-      <h1 class="aff-login-title">
-        Gagne de l'argent<br>avec <em>Crush</em>
-      </h1>
-      <p class="aff-login-desc">
-        Partage ton lien, génère des clics, encaisse tes gains. Simple, transparent, automatique.
-      </p>
-
-      <a href="https://apps.apple.com/us/app/crush-assistant-drague/id6783893349" target="_blank" class="aff-app-link">
-        <div class="aff-app-link-icon">💬</div>
-        <div class="aff-app-link-text">
-          <span class="aff-app-link-label">Disponible sur</span>
-          <span class="aff-app-link-name">Crush — Assistant drague</span>
+<!-- ── LOGIN ── -->
+<div id="login-wrap">
+  <div class="login-wrap">
+    <div class="login-left">
+      <div class="login-pill"><span class="login-pill-dot"></span>Programme affilié</div>
+      <h1 class="login-h1">Gagne de l'argent<br>avec <em>Crush</em></h1>
+      <p class="login-sub">Partage ton lien, génère des clics, encaisse tes gains.<br>Simple, transparent, automatique.</p>
+      <a href="https://apps.apple.com/us/app/crush-assistant-drague/id6783893349" target="_blank" class="store-btn">
+        <div class="store-icon">💬</div>
+        <div>
+          <div class="store-label">Disponible sur</div>
+          <div class="store-name">Crush — Assistant drague</div>
         </div>
       </a>
     </div>
-
-    <!-- Droite : formulaire -->
-    <div class="aff-login-right">
-      <div class="aff-form-logo">Crush <span>Affi</span></div>
-
-      <h2 class="aff-form-title">Ton espace affilié</h2>
-      <p class="aff-form-sub">Connecte-toi avec ton adresse email</p>
-
-      <div class="aff-field">
-        <label>Adresse email</label>
-        <input type="email" id="f-email" placeholder="ton@email.com"
-               onkeydown="if(event.key==='Enter')login()" />
+    <div class="login-right">
+      <div class="lf-brand">Crush <span>Affi</span></div>
+      <h2 class="lf-title">Ton espace affilié</h2>
+      <p class="lf-sub">Connecte-toi avec ton adresse email</p>
+      <label class="lf-label" for="f-email">Adresse email</label>
+      <input class="lf-input" type="email" id="f-email" placeholder="ton@email.com" onkeydown="if(event.key==='Enter')login()" />
+      <button class="lf-btn" onclick="login()">
+        <svg xmlns="http://www.w3.org/2000/svg" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M15 3h4a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-4"/><polyline points="10 17 15 12 10 7"/><line x1="15" y1="12" x2="3" y2="12"/></svg>
+        Accéder à mon espace
+      </button>
+      <div id="lf-err" class="lf-err hidden">
+        <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+        Aucun compte trouvé avec cet email
       </div>
-
-      <button class="aff-btn-login" onclick="login()">Accéder à mon espace →</button>
-      <p id="err" class="aff-error hidden">Aucun compte trouvé avec cet email</p>
-
-      <div class="aff-footer-note">
-        Pas encore affilié ?<br>
-        Contacte-nous pour rejoindre le programme et commencer à gagner.
-      </div>
+      <p class="lf-note">Pas encore affilié ?<br>Contacte-nous pour rejoindre le programme.</p>
     </div>
+  </div>
+</div>
 
+<!-- ── DASHBOARD ── -->
+<div id="dash-wrap" class="hidden">
+  <!-- Mobile top bar -->
+  <div class="mob-bar">
+    <span class="mob-brand-txt">Crush Affi</span>
+    <button class="mob-burger" id="mob-burger" onclick="toggleMobMenu()"><span></span><span></span><span></span></button>
+  </div>
+  <!-- Mobile drawer -->
+  <div class="mob-drawer" id="mob-drawer">
+    <div id="mob-nav-links"></div>
+    <div class="mob-sep"></div>
+    <button class="mob-logout" onclick="logout()">Déconnexion</button>
   </div>
 
-  <div id="app"></div>
-
-  <script src="../js/data.js"></script>
-  <script>
-    const AFF_KEY = 'aff_session';
-    let currentId = null;
-
-    // Pré-remplir l'email depuis l'URL ?id=xxx
-    window.addEventListener('DOMContentLoaded', () => {
-      const urlId = new URLSearchParams(location.search).get('id');
-      if (urlId) {
-        const a = DB.getAffiliate(urlId);
-        if (a) document.getElementById('f-email').value = a.email;
-      }
-      const saved = sessionStorage.getItem(AFF_KEY);
-      if (saved && DB.getAffiliate(saved)) { currentId = saved; showDashboard(); }
-    });
-
-    function login() {
-      const email = document.getElementById('f-email').value.trim();
-      const found = Object.entries(DB.getAffiliates()).find(([,a]) => a.email === email);
-      if (!found) { document.getElementById('err').classList.remove('hidden'); return; }
-      currentId = found[0];
-      sessionStorage.setItem(AFF_KEY, currentId);
-      showDashboard();
-    }
-
-    function logout() { sessionStorage.removeItem(AFF_KEY); location.reload(); }
-
-    function buildAffNav(activePage) {
-      const pages = [
-        { id:'stats',    label:'Mes stats',   href:'#', group:'Suivi' },
-        { id:'earnings', label:'Revenus',      href:'#', group:'Suivi' },
-        { id:'withdraw', label:'Retrait',      href:'#', group:'Action' },
-        { id:'payment',  label:'Paiement',     href:'#', group:'Action' },
-      ];
-      let lastG = '';
-      const nav = pages.map(p => {
-        let out = '';
-        if (p.group !== lastG) { out += `<div class="nav-group">${p.group}</div>`; lastG = p.group; }
-        out += `<a href="#" class="nav-link ${activePage===p.id?'active':''}" onclick="showPage('${p.id}');event.preventDefault()">${p.label}</a>`;
-        return out;
-      }).join('');
-
-      const mobLinksHTML = pages.map(p =>
-        `<a href="#" class="mob-menu-link ${activePage===p.id?'active':''}" onclick="showPage('${p.id}');closeMenu();event.preventDefault()">${p.label}</a>`
-      ).join('');
-
-      const a = DB.getAffiliate(currentId);
-      return `
-        <div class="mob-nav-wrap" id="mob-nav-wrap">
-          <header class="mob-header">
-            <span class="mob-brand">Crush Affi</span>
-            <button class="mob-burger" id="burger" onclick="toggleMenu()"><span></span><span></span><span></span></button>
-          </header>
-          <div class="mob-menu" id="mob-menu">
-            ${mobLinksHTML}
-            <div class="mob-menu-sep"></div>
-            <button class="mob-menu-logout" onclick="logout()">Déconnexion</button>
-          </div>
+  <div class="dash">
+    <!-- Sidebar -->
+    <aside class="dash-sidebar">
+      <div class="ds-top">
+        <div class="ds-brand">Crush Affi <small>Espace affilié</small></div>
+      </div>
+      <div id="ds-user-block"></div>
+      <nav class="ds-nav" id="ds-nav"></nav>
+      <div class="ds-footer">
+        <button class="ds-logout" onclick="logout()">Déconnexion</button>
+      </div>
+    </aside>
+    <!-- Content -->
+    <div class="dash-main">
+      <div class="dash-header">
+        <div>
+          <div class="dash-header-title" id="page-title">—</div>
+          <div class="dash-header-sub" id="page-sub">—</div>
         </div>
-        <div class="overlay" id="overlay" onclick="closeMenu()"></div>
-        <div class="app">
-          <aside class="sidebar" id="sidebar">
-            <div class="sidebar-brand">Crush Affi <small>Espace affilié</small></div>
-            <div class="sidebar-user">
-              <div class="sidebar-user-name">${a.name}</div>
-              <div class="sidebar-user-email">${a.email}</div>
-            </div>
-            <nav>${nav}</nav>
-            <div class="sidebar-footer">
-              <button class="btn-logout" onclick="logout()">Déconnexion</button>
-            </div>
-          </aside>
-          <main class="main" id="page-content"></main>
-        </div>`;
-    }
+        <div id="page-badge"></div>
+      </div>
+      <div class="dash-content" id="page-content"></div>
+    </div>
+  </div>
+</div>
 
-    function toggleMenu() {
-      document.getElementById('mob-menu').classList.toggle('open');
-      document.getElementById('burger').classList.toggle('open');
-      document.getElementById('overlay').classList.toggle('show');
-    }
-    function closeMenu() {
-      document.getElementById('mob-menu').classList.remove('open');
-      document.getElementById('burger').classList.remove('open');
-      document.getElementById('overlay').classList.remove('show');
-    }
+<script src="../js/data.js"></script>
+<script>
+  const AFF_KEY = 'aff_session';
+  let currentId = null;
+  let currentPage = 'stats';
+  let realtimeTimer = null;
 
-    let currentPage = 'stats';
-    let realtimeTimer = null;
+  const NAV_ITEMS = [
+    { id:'stats',    label:'Mes stats',   icon:'📊', group:'Suivi' },
+    { id:'earnings', label:'Revenus',     icon:'💰', group:'Suivi' },
+    { id:'withdraw', label:'Retrait',     icon:'💸', group:'Action' },
+    { id:'payment',  label:'Paiement',    icon:'🏦', group:'Action' },
+  ];
 
-    function showDashboard() {
-      document.getElementById('login-screen').style.display = 'none';
-      document.getElementById('app').style.display = 'block';
-      showPage('stats');
+  window.addEventListener('DOMContentLoaded', () => {
+    const urlId = new URLSearchParams(location.search).get('id');
+    if (urlId) {
+      const a = DB.getAffiliate(urlId);
+      if (a) document.getElementById('f-email').value = a.email;
     }
+    const saved = sessionStorage.getItem(AFF_KEY);
+    if (saved && DB.getAffiliate(saved)) { currentId = saved; showDashboard(); }
+  });
 
-    function showPage(page) {
-      currentPage = page;
-      const a = DB.getAffiliate(currentId);
-      document.getElementById('app').innerHTML = buildAffNav(page);
-      if (page==='stats')    renderStats(a);
-      if (page==='earnings') renderEarnings(a);
-      if (page==='withdraw') renderWithdraw(a);
-      if (page==='payment')  renderPayment(a);
-      clearInterval(realtimeTimer);
+  function login() {
+    const email = document.getElementById('f-email').value.trim();
+    const inp   = document.getElementById('f-email');
+    const err   = document.getElementById('lf-err');
+    const found = Object.entries(DB.getAffiliates()).find(([,a]) => a.email === email);
+    if (!found) {
+      err.classList.remove('hidden');
+      inp.classList.add('err');
+      setTimeout(() => inp.classList.remove('err'), 2000);
+      return;
+    }
+    currentId = found[0];
+    sessionStorage.setItem(AFF_KEY, currentId);
+    showDashboard();
+  }
+
+  function logout() { sessionStorage.removeItem(AFF_KEY); location.reload(); }
+
+  function toggleMobMenu() {
+    document.getElementById('mob-drawer').classList.toggle('open');
+    document.getElementById('mob-burger').classList.toggle('open');
+  }
+
+  function buildNav(active) {
+    let lastG = '';
+    const a = DB.getAffiliate(currentId);
+    const initial = (a.name||'?').charAt(0).toUpperCase();
+
+    // Sidebar user block
+    document.getElementById('ds-user-block').innerHTML = `
+      <div class="ds-user" style="margin:14px 12px 0">
+        <div class="ds-user-avatar">${initial}</div>
+        <div class="ds-user-name">${a.name}</div>
+        <div class="ds-user-email">${a.email}</div>
+      </div>`;
+
+    // Sidebar nav
+    document.getElementById('ds-nav').innerHTML = NAV_ITEMS.map(p => {
+      let out = '';
+      if (p.group !== lastG) { out += `<div class="ds-nav-group">${p.group}</div>`; lastG = p.group; }
+      out += `<div class="ds-nav-link ${active===p.id?'active':''}" onclick="showPage('${p.id}')">
+        <span class="ds-nav-icon">${p.icon}</span>${p.label}</div>`;
+      return out;
+    }).join('');
+
+    // Mobile nav
+    lastG = '';
+    document.getElementById('mob-nav-links').innerHTML = NAV_ITEMS.map(p => {
+      let out = '';
+      if (p.group !== lastG) { out += `<div style="font-size:.6rem;font-weight:700;color:#222;text-transform:uppercase;letter-spacing:.1em;padding:12px 16px 4px">${p.group}</div>`; lastG = p.group; }
+      out += `<div class="mob-nav-link ${active===p.id?'active':''}" onclick="showPage('${p.id}');toggleMobMenu()">
+        ${p.icon} ${p.label}</div>`;
+      return out;
+    }).join('');
+  }
+
+  function showDashboard() {
+    document.getElementById('login-wrap').classList.add('hidden');
+    document.getElementById('dash-wrap').classList.remove('hidden');
+    showPage('stats');
+  }
+
+  function showPage(page) {
+    currentPage = page;
+    buildNav(page);
+    clearInterval(realtimeTimer);
+    const a = DB.getAffiliate(currentId);
+    if (page==='stats')    renderStats(a);
+    if (page==='earnings') renderEarnings(a);
+    if (page==='withdraw') renderWithdraw(a);
+    if (page==='payment')  renderPayment(a);
+    if (page==='stats' || page==='earnings') {
       realtimeTimer = setInterval(() => {
         const fresh = DB.getAffiliate(currentId);
         if (currentPage==='stats')    renderStats(fresh);
         if (currentPage==='earnings') renderEarnings(fresh);
       }, 4000);
     }
+  }
 
-    function setContent(html) {
-      document.getElementById('page-content').innerHTML = html;
-    }
+  function setPage(title, sub, badgeHtml, contentHtml) {
+    document.getElementById('page-title').textContent = title;
+    document.getElementById('page-sub').textContent   = sub;
+    document.getElementById('page-badge').innerHTML   = badgeHtml || '';
+    document.getElementById('page-content').innerHTML = contentHtml;
+  }
 
-    // ---- STATS ----
-    function renderStats(a) {
-      const clicks  = DB.getClicksForAffiliate(currentId);
-      const total   = a.clicks || 0;
-      const earned  = a.earned || 0;
-      const balance = a.balance || 0;
-      const rate    = getRate();
-      const inCycle = total % 1000;
-      const pct     = (inCycle/1000)*100;
-      const next    = (Math.floor(total/1000)+1)*1000;
-      const myLink  = Object.entries(DB.getLinks()).find(([,l]) => l.affId===currentId);
-      const trackUrl = myLink ? location.origin + location.pathname.replace('pages/affiliate.html','') + 'pages/track.html?lid=' + myLink[0] : '';
+  function getRate() {
+    const l = Object.values(DB.getLinks()).find(l => l.affId===currentId);
+    return l ? (l.rate||5) : 5;
+  }
 
-      const platforms = {iOS:0, Android:0, PC:0};
-      clicks.forEach(c => { if(platforms[c.platform]!==undefined) platforms[c.platform]++; });
-      const colors = {iOS:'#6366f1', Android:'#10b981', PC:'#f59e0b'};
-      const barsHTML = clicks.length===0
-        ? '<p style="color:var(--text-muted);font-size:.83rem">Aucun clic enregistré</p>'
-        : Object.entries(platforms).map(([n,c]) => {
-            const p = Math.round((c/clicks.length)*100);
-            return `<div class="platform-row"><span class="platform-name">${n}</span><div class="bar-track"><div class="bar-fill" style="width:${p}%;background:${colors[n]}"></div></div><span class="platform-pct">${c} — ${p}%</span></div>`;
-          }).join('');
+  function getMyLink() {
+    return Object.entries(DB.getLinks()).find(([,l]) => l.affId===currentId) || null;
+  }
 
-      const recentHTML = clicks.slice(0,10).map(c =>
-        `<div class="activity-item"><span class="plat-tag plat-${c.platform.toLowerCase()}">${c.platform}</span><span class="activity-time">${DB.formatDate(c.ts)}</span></div>`
-      ).join('') || '<p style="color:var(--text-muted);font-size:.83rem;padding:10px 0">Aucun clic</p>';
+  // ── STATS ──
+  function renderStats(a) {
+    const clicks  = DB.getClicksForAffiliate(currentId);
+    const total   = a.clicks  || 0;
+    const earned  = a.earned  || 0;
+    const balance = a.balance || 0;
+    const rate    = getRate();
+    const inCycle = total % 1000;
+    const pct     = (inCycle / 1000) * 100;
+    const next    = (Math.floor(total/1000)+1)*1000;
+    const myLink  = getMyLink();
+    const trackUrl = myLink ? location.origin + '/' + (myLink[1].slug || myLink[0]) : '';
 
-      setContent(`
-        <span class="live-label"><span class="live-dot"></span>Temps réel</span>
-        <p class="page-title">Mes statistiques</p>
-        <p class="page-desc">Taux : ${rate} € par 1 000 clics</p>
-        <div class="stats-row">
-          <div class="stat-box"><div class="stat-box-label">Total clics</div><div class="stat-box-value accent">${total.toLocaleString('fr-FR')}</div></div>
-          <div class="stat-box"><div class="stat-box-label">Revenus gagnés</div><div class="stat-box-value green">${earned.toFixed(2)} €</div></div>
-          <div class="stat-box"><div class="stat-box-label">Solde dispo</div><div class="stat-box-value">${balance.toFixed(2)} €</div></div>
-        </div>
+    const platforms = {iOS:0, Android:0, PC:0};
+    clicks.forEach(c => { if (platforms[c.platform]!==undefined) platforms[c.platform]++; });
+    const colors = {iOS:'#6366f1', Android:'#10b981', PC:'#f59e0b'};
 
-        ${trackUrl ? `
-        <div class="card">
-          <div class="card-head"><span class="card-title">Ton lien de tracking</span></div>
-          <div class="card-body">
-            <div class="copy-row">
-              <input id="my-link" value="${trackUrl}" readonly />
-              <button class="btn btn-secondary btn-sm" onclick="copyMyLink()">Copier</button>
-            </div>
+    const barsHTML = clicks.length === 0
+      ? '<p style="color:#333;font-size:.83rem">Aucun clic enregistré</p>'
+      : Object.entries(platforms).map(([n,c]) => {
+          const p = Math.round((c/clicks.length)*100);
+          return `<div class="plat-row"><span class="plat-name">${n}</span><div class="plat-track"><div class="plat-fill" style="width:${p}%;background:${colors[n]}"></div></div><span class="plat-pct">${c} — ${p}%</span></div>`;
+        }).join('');
+
+    const recentHTML = clicks.slice(0,10).map(c =>
+      `<div class="act-item"><span class="plat-tag plat-${c.platform.toLowerCase()}">${c.platform}</span><span class="act-time">${DB.formatDate(c.ts)}</span></div>`
+    ).join('') || '<p style="color:#333;font-size:.83rem;padding:10px 0">Aucun clic</p>';
+
+    setPage('Mes statistiques', `Taux : ${rate} € par 1 000 clics`,
+      `<span style="display:inline-flex;align-items:center;gap:6px;background:rgba(34,197,94,.1);border:1px solid rgba(34,197,94,.2);color:#22c55e;padding:6px 14px;border-radius:99px;font-size:.72rem;font-weight:700">
+        <span style="width:6px;height:6px;border-radius:50%;background:#22c55e;animation:pulse 1.8s infinite"></span>Temps réel</span>`,
+      `<div class="stat-grid">
+        <div class="sc sc-glow"><div class="sc-label">Total clics</div><div class="sc-value accent">${total.toLocaleString('fr-FR')}</div></div>
+        <div class="sc"><div class="sc-label">Revenus gagnés</div><div class="sc-value green">${earned.toFixed(2)} €</div></div>
+        <div class="sc sc-accent"><div class="sc-label">Solde disponible</div><div class="sc-value">${balance.toFixed(2)} €</div><div class="sc-sub">Disponible au retrait</div></div>
+      </div>
+
+      ${trackUrl ? `
+      <div class="block">
+        <div class="block-head"><span class="block-title">Ton lien de partage</span></div>
+        <div class="block-body">
+          <div class="link-box">
+            <input id="my-link" value="${trackUrl}" readonly />
+            <button class="link-copy" onclick="copyMyLink()">Copier</button>
           </div>
-        </div>` : '<div class="card"><div class="card-body" style="color:var(--text-muted);font-size:.85rem">Aucun lien actif — demande à ton admin de t\'en générer un.</div></div>'}
-
-        <div class="card">
-          <div class="card-head"><span class="card-title">Progression vers le prochain gain</span></div>
-          <div class="card-body">
-            <div class="progress-wrap"><div class="progress-fill" style="width:${pct}%"></div></div>
-            <p class="progress-label">${inCycle.toLocaleString('fr-FR')} / 1 000 clics — prochain gain : +${rate} € au palier ${next.toLocaleString('fr-FR')}</p>
-          </div>
+          <p style="font-size:.75rem;color:#333;margin-top:10px">Partage ce lien — chaque clic est automatiquement comptabilisé</p>
         </div>
+      </div>` : `<div class="block"><div class="block-body" style="color:#333;font-size:.85rem">Aucun lien actif — contacte l'admin pour en générer un.</div></div>`}
 
-        <div class="card">
-          <div class="card-head"><span class="card-title">Plateformes</span></div>
-          <div class="card-body">${barsHTML}</div>
+      <div class="block">
+        <div class="block-head"><span class="block-title">Prochain palier</span></div>
+        <div class="block-body">
+          <div class="prog-wrap"><div class="prog-fill" style="width:${pct}%"></div></div>
+          <p class="prog-label">${inCycle.toLocaleString('fr-FR')} / 1 000 clics — +${rate} € au palier ${next.toLocaleString('fr-FR')}</p>
         </div>
+      </div>
 
-        <div class="card">
-          <div class="card-head"><span class="card-title">Clics récents</span></div>
-          <div class="card-body">${recentHTML}</div>
-        </div>`);
-    }
-
-    function copyMyLink() {
-      const val = document.getElementById('my-link').value;
-      navigator.clipboard.writeText(val).then(() => {
-        const btn = document.querySelector('#my-link + button');
-        btn.textContent = 'Copié !'; setTimeout(()=>btn.textContent='Copier',2000);
-      });
-    }
-
-    function getRate() {
-      const l = Object.values(DB.getLinks()).find(l => l.affId===currentId);
-      return l ? (l.rate||5) : 5;
-    }
-
-    // ---- EARNINGS ----
-    function renderEarnings(a) {
-      const earned = a.earned||0, balance = a.balance||0;
-      const withdrawn = Math.max(0, earned - balance);
-      const earnings = DB.getEarningsForAffiliate(currentId);
-      const withdrawals = DB.getWithdrawalsForAffiliate(currentId);
-
-      const earnRows = earnings.length===0
-        ? '<p style="color:var(--text-muted);font-size:.83rem;padding:10px 0">Aucun gain encore — partagez votre lien pour commencer</p>'
-        : earnings.map(e => `<div class="activity-item"><span class="balance-pill">+${e.amount.toFixed(2)} €</span><span>Palier ${e.clicks.toLocaleString('fr-FR')} clics</span><span class="activity-time">${DB.formatDate(e.ts)}</span></div>`).join('');
-
-      const wRows = withdrawals.length===0
-        ? '<p style="color:var(--text-muted);font-size:.83rem;padding:10px 0">Aucun retrait</p>'
-        : withdrawals.map(w => {
-            const [cls,lbl] = {pending:['badge-pending','En attente'],done:['badge-done','Traité'],rejected:['badge-rejected','Refusé']}[w.status]||['',''];
-            return `<div class="activity-item"><span style="color:var(--red);font-weight:700;font-size:.82rem">-${w.amount.toFixed(2)} €</span><span>{{paypal:'PayPal',virement:'Virement',crypto:'Crypto'}[w.method]||w.method}</span><span class="badge-status ${cls}">${lbl}</span><span class="activity-time">${DB.formatDate(w.ts)}</span></div>`;
-          }).join('');
-
-      setContent(`
-        <p class="page-title">Mes revenus</p>
-        <p class="page-desc">Taux : ${getRate()} € par 1 000 clics</p>
-        <div class="card">
-          <div class="card-body">
-            <div style="display:flex;flex-direction:column;gap:0">
-              <div style="display:flex;justify-content:space-between;padding:12px 0;border-bottom:1px solid var(--border);font-size:.9rem"><span style="color:var(--text-muted)">Revenus totaux générés</span><strong>${earned.toFixed(2)} €</strong></div>
-              <div style="display:flex;justify-content:space-between;padding:12px 0;border-bottom:1px solid var(--border);font-size:.9rem"><span style="color:var(--text-muted)">Déjà retiré</span><strong>${withdrawn.toFixed(2)} €</strong></div>
-              <div style="display:flex;justify-content:space-between;padding:12px 0;font-size:1rem"><span style="color:var(--accent-dark);font-weight:600">Solde disponible</span><strong style="color:var(--accent-dark)">${balance.toFixed(2)} €</strong></div>
-            </div>
-          </div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:14px">
+        <div class="block">
+          <div class="block-head"><span class="block-title">Plateformes</span></div>
+          <div class="block-body">${barsHTML}</div>
         </div>
-        <div class="card"><div class="card-head"><span class="card-title">Historique des gains</span></div><div class="card-body">${earnRows}</div></div>
-        <div class="card"><div class="card-head"><span class="card-title">Historique des retraits</span></div><div class="card-body">${wRows}</div></div>`);
-    }
+        <div class="block">
+          <div class="block-head"><span class="block-title">Clics récents</span></div>
+          <div class="block-body" style="max-height:260px;overflow-y:auto">${recentHTML}</div>
+        </div>
+      </div>`);
+  }
 
-    // ---- WITHDRAW ----
-    function renderWithdraw(a) {
-      const balance = a.balance||0;
-      const pay = a.paymentInfo||{};
-      setContent(`
-        <p class="page-title">Demande de retrait</p>
-        <p class="page-desc">Solde disponible : <strong>${balance.toFixed(2)} €</strong></p>
-        <div id="withdraw-form">
-          <div class="form-card">
-            <div class="form-section">Montant</div>
-            <div class="form-row"><label>Montant à retirer (€)</label><input id="w-amount" type="number" min="1" step="0.01" placeholder="Ex : 25" /></div>
-            <div class="form-section">Méthode</div>
-            <div class="form-row"><label>Méthode de paiement</label>
+  function copyMyLink() {
+    const val = document.getElementById('my-link').value;
+    navigator.clipboard.writeText(val).then(() => {
+      const btn = document.querySelector('.link-copy');
+      btn.textContent = 'Copié !';
+      setTimeout(() => btn.textContent = 'Copier', 2000);
+    });
+  }
+
+  // ── EARNINGS ──
+  function renderEarnings(a) {
+    const earned = a.earned||0, balance = a.balance||0;
+    const withdrawn = Math.max(0, earned - balance);
+    const earnings   = DB.getEarningsForAffiliate(currentId);
+    const withdrawals = DB.getWithdrawalsForAffiliate(currentId);
+
+    const earnRows = earnings.length === 0
+      ? '<p style="color:#333;font-size:.83rem;padding:10px 0">Aucun gain pour l\'instant</p>'
+      : earnings.map(e => `<div class="act-item"><span class="earn-pill">+${e.amount.toFixed(2)} €</span><span style="color:#555">Palier ${e.clicks.toLocaleString('fr-FR')} clics</span><span class="act-time">${DB.formatDate(e.ts)}</span></div>`).join('');
+
+    const statusMap = {pending:['badge-yellow','En attente'],done:['badge-green','Traité'],rejected:['badge-red','Refusé']};
+    const methodLabel = {paypal:'PayPal',virement:'Virement',crypto:'Crypto'};
+    const wRows = withdrawals.length === 0
+      ? '<p style="color:#333;font-size:.83rem;padding:10px 0">Aucun retrait</p>'
+      : withdrawals.map(w => {
+          const [cls,lbl] = statusMap[w.status]||['',''];
+          return `<div class="act-item"><span style="color:var(--red);font-weight:700;font-size:.82rem">-${w.amount.toFixed(2)} €</span><span style="color:#555">${methodLabel[w.method]||w.method}</span><span class="badge ${cls}">${lbl}</span><span class="act-time">${DB.formatDate(w.ts)}</span></div>`;
+        }).join('');
+
+    setPage('Mes revenus', `Taux : ${getRate()} € par 1 000 clics`, '',
+      `<div class="stat-grid" style="margin-bottom:24px">
+        <div class="sc"><div class="sc-label">Total généré</div><div class="sc-value">${earned.toFixed(2)} €</div></div>
+        <div class="sc"><div class="sc-label">Déjà retiré</div><div class="sc-value">${withdrawn.toFixed(2)} €</div></div>
+        <div class="sc sc-accent sc-glow"><div class="sc-label">Solde dispo</div><div class="sc-value green">${balance.toFixed(2)} €</div></div>
+      </div>
+      <div class="block"><div class="block-head"><span class="block-title">Historique des gains</span></div><div class="block-body">${earnRows}</div></div>
+      <div class="block"><div class="block-head"><span class="block-title">Historique des retraits</span></div><div class="block-body">${wRows}</div></div>`);
+  }
+
+  // ── WITHDRAW ──
+  function renderWithdraw(a) {
+    const balance = a.balance||0;
+    setPage('Demande de retrait', `Solde disponible : ${balance.toFixed(2)} €`, '',
+      `<div id="withdraw-form">
+        <div class="block" style="max-width:480px">
+          <div class="block-head"><span class="block-title">Nouveau retrait</span></div>
+          <div class="block-body">
+            <div class="f-section">Montant</div>
+            <div class="f-row"><label>Montant (€)</label><input id="w-amount" type="number" min="1" step="0.01" placeholder="Ex : 25" /></div>
+            <div class="f-section">Méthode</div>
+            <div class="f-row"><label>Méthode de paiement</label>
               <select id="w-method" onchange="updateMethodInfo()">
                 <option value="">-- Choisir --</option>
                 <option value="paypal">PayPal</option>
@@ -558,88 +709,91 @@
                 <option value="crypto">Crypto</option>
               </select>
             </div>
-            <div id="method-info" style="margin-bottom:14px"></div>
-            <button class="btn btn-primary" onclick="submitWithdraw()">Envoyer la demande</button>
+            <div id="method-info"></div>
+            <button class="f-btn" onclick="submitWithdraw()">Envoyer la demande</button>
           </div>
         </div>
-        <div id="withdraw-ok" style="display:none" class="success-box">
-          <h3>Demande envoyée ✓</h3>
-          <p>L'admin a été notifié et traitera ton retrait rapidement.</p>
-          <button class="btn btn-secondary" style="margin-top:12px" onclick="showPage('stats')">Retour aux stats</button>
-        </div>`);
-    }
+      </div>
+      <div id="withdraw-ok" class="success-card hidden" style="max-width:480px">
+        <h3>Demande envoyée ✓</h3>
+        <p>L'admin traitera ton retrait rapidement.</p>
+        <button class="f-btn-sec" onclick="showPage('stats')">Retour aux stats</button>
+      </div>`);
+  }
 
-    function updateMethodInfo() {
-      const method = document.getElementById('w-method').value;
-      const a = DB.getAffiliate(currentId);
-      const pay = a.paymentInfo||{};
-      const el = document.getElementById('method-info');
-      if (!method) { el.innerHTML=''; return; }
-      const configured = { paypal: pay.paypal, virement: pay.iban, crypto: pay.wallet };
-      if (configured[method]) {
-        const txt = method==='paypal' ? pay.paypal
-          : method==='virement' ? `${pay.firstname} ${pay.lastname} — ${pay.iban}`
-          : `${pay.wallet} (${pay.cryptoNetwork})`;
-        el.innerHTML = `<p style="font-size:.82rem;padding:10px 12px;background:var(--green-light);border-radius:var(--radius-sm);color:var(--green)">Vers : <strong>${txt}</strong></p>`;
-      } else {
-        el.innerHTML = `<p style="font-size:.82rem;padding:10px 12px;background:var(--yellow-light);border-radius:var(--radius-sm);color:var(--yellow)">Aucune info configurée — <a href="#" onclick="showPage('payment');event.preventDefault()" style="color:var(--yellow);font-weight:700">Configurer maintenant</a></p>`;
-      }
+  function updateMethodInfo() {
+    const method = document.getElementById('w-method').value;
+    const a   = DB.getAffiliate(currentId);
+    const pay = a.paymentInfo||{};
+    const el  = document.getElementById('method-info');
+    if (!method) { el.innerHTML=''; return; }
+    const configured = {paypal:pay.paypal, virement:pay.iban, crypto:pay.wallet};
+    if (configured[method]) {
+      const txt = method==='paypal' ? pay.paypal
+        : method==='virement' ? `${pay.firstname} ${pay.lastname} — ${pay.iban}`
+        : `${pay.wallet} (${pay.cryptoNetwork})`;
+      el.innerHTML = `<div class="method-ok">Vers : <strong>${txt}</strong></div>`;
+    } else {
+      el.innerHTML = `<div class="method-warn">Aucune info configurée — <a href="#" onclick="showPage('payment');event.preventDefault()">Configurer maintenant</a></div>`;
     }
+  }
 
-    function submitWithdraw() {
-      const amount = parseFloat(document.getElementById('w-amount').value);
-      const method = document.getElementById('w-method').value;
-      const a = DB.getAffiliate(currentId);
-      if (!amount||amount<=0) { alert('Montant invalide'); return; }
-      if (!method) { alert('Choisissez une méthode'); return; }
-      if (amount > (a.balance||0)) { alert(`Solde insuffisant (${(a.balance||0).toFixed(2)} €)`); return; }
-      const pay = a.paymentInfo||{};
-      DB.addWithdrawal({ id:DB.generateId(), affId:currentId, amount, method, status:'pending',
-        ts:Date.now(), paypal:pay.paypal||'', firstname:pay.firstname||'', lastname:pay.lastname||'',
-        iban:pay.iban||'', wallet:pay.wallet||'', network:pay.cryptoNetwork||'' });
-      a.balance = (a.balance||0) - amount;
-      DB.saveAffiliate(currentId, a);
-      document.getElementById('withdraw-form').style.display = 'none';
-      document.getElementById('withdraw-ok').style.display = 'block';
-    }
+  function submitWithdraw() {
+    const amount = parseFloat(document.getElementById('w-amount').value);
+    const method = document.getElementById('w-method').value;
+    const a = DB.getAffiliate(currentId);
+    if (!amount||amount<=0) { alert('Montant invalide'); return; }
+    if (!method) { alert('Choisissez une méthode'); return; }
+    if (amount > (a.balance||0)) { alert(`Solde insuffisant (${(a.balance||0).toFixed(2)} €)`); return; }
+    const pay = a.paymentInfo||{};
+    DB.addWithdrawal({ id:DB.generateId(), affId:currentId, amount, method, status:'pending',
+      ts:Date.now(), paypal:pay.paypal||'', firstname:pay.firstname||'', lastname:pay.lastname||'',
+      iban:pay.iban||'', wallet:pay.wallet||'', network:pay.cryptoNetwork||'' });
+    a.balance = (a.balance||0) - amount;
+    DB.saveAffiliate(currentId, a);
+    document.getElementById('withdraw-form').classList.add('hidden');
+    document.getElementById('withdraw-ok').classList.remove('hidden');
+  }
 
-    // ---- PAYMENT ----
-    function renderPayment(a) {
-      const p = a.paymentInfo||{};
-      setContent(`
-        <p class="page-title">Informations de paiement</p>
-        <p class="page-desc">Configure tes coordonnées pour les retraits</p>
-        <div class="form-card">
-          <div class="form-section">PayPal</div>
-          <div class="form-row"><label>Adresse PayPal</label><input id="p-paypal" type="email" placeholder="vous@paypal.com" value="${p.paypal||''}" /></div>
-          <div class="form-section">Virement bancaire</div>
-          <div class="form-row"><label>Prénom</label><input id="p-firstname" type="text" placeholder="Prénom" value="${p.firstname||''}" /></div>
-          <div class="form-row"><label>Nom</label><input id="p-lastname" type="text" placeholder="Nom" value="${p.lastname||''}" /></div>
-          <div class="form-row"><label>IBAN</label><input id="p-iban" type="text" placeholder="FR76 …" value="${p.iban||''}" /></div>
-          <div class="form-section">Crypto</div>
-          <div class="form-row"><label>Adresse wallet</label><input id="p-wallet" type="text" placeholder="0x…" value="${p.wallet||''}" /></div>
-          <div class="form-row"><label>Réseau</label><input id="p-network" type="text" placeholder="Ethereum ERC-20" value="${p.cryptoNetwork||''}" /></div>
-          <div style="display:flex;gap:10px;margin-top:6px">
-            <button class="btn btn-primary" onclick="savePayment()">Enregistrer</button>
+  // ── PAYMENT ──
+  function renderPayment(a) {
+    const p = a.paymentInfo||{};
+    setPage('Informations de paiement', 'Configure tes coordonnées pour les retraits', '',
+      `<div class="block" style="max-width:520px">
+        <div class="block-head"><span class="block-title">Coordonnées bancaires</span></div>
+        <div class="block-body">
+          <div class="f-section">PayPal</div>
+          <div class="f-row"><label>Adresse PayPal</label><input id="p-paypal" type="email" placeholder="vous@paypal.com" value="${p.paypal||''}" /></div>
+          <div class="f-section">Virement bancaire</div>
+          <div class="f-row"><label>Prénom</label><input id="p-firstname" type="text" placeholder="Prénom" value="${p.firstname||''}" /></div>
+          <div class="f-row"><label>Nom</label><input id="p-lastname" type="text" placeholder="Nom" value="${p.lastname||''}" /></div>
+          <div class="f-row"><label>IBAN</label><input id="p-iban" type="text" placeholder="FR76 …" value="${p.iban||''}" /></div>
+          <div class="f-section">Crypto</div>
+          <div class="f-row"><label>Adresse wallet</label><input id="p-wallet" type="text" placeholder="0x…" value="${p.wallet||''}" /></div>
+          <div class="f-row"><label>Réseau</label><input id="p-network" type="text" placeholder="Ethereum ERC-20" value="${p.cryptoNetwork||''}" /></div>
+          <div style="display:flex;gap:10px;margin-top:8px;align-items:center">
+            <button class="f-btn" onclick="savePayment()">Enregistrer</button>
+            <span id="pay-ok" class="save-ok">✓ Enregistré</span>
           </div>
-          <p id="pay-ok" style="color:var(--green);font-size:.8rem;margin-top:10px;display:none">Enregistré</p>
-        </div>`);
-    }
+        </div>
+      </div>`);
+  }
 
-    function savePayment() {
-      const a = DB.getAffiliate(currentId);
-      a.paymentInfo = {
-        paypal: document.getElementById('p-paypal').value.trim(),
-        firstname: document.getElementById('p-firstname').value.trim(),
-        lastname: document.getElementById('p-lastname').value.trim(),
-        iban: document.getElementById('p-iban').value.trim(),
-        wallet: document.getElementById('p-wallet').value.trim(),
-        cryptoNetwork: document.getElementById('p-network').value.trim(),
-      };
-      DB.saveAffiliate(currentId, a);
-      document.getElementById('pay-ok').style.display = 'block';
-      setTimeout(() => document.getElementById('pay-ok').style.display='none', 3000);
-    }
-  </script>
+  function savePayment() {
+    const a = DB.getAffiliate(currentId);
+    a.paymentInfo = {
+      paypal:        document.getElementById('p-paypal').value.trim(),
+      firstname:     document.getElementById('p-firstname').value.trim(),
+      lastname:      document.getElementById('p-lastname').value.trim(),
+      iban:          document.getElementById('p-iban').value.trim(),
+      wallet:        document.getElementById('p-wallet').value.trim(),
+      cryptoNetwork: document.getElementById('p-network').value.trim(),
+    };
+    DB.saveAffiliate(currentId, a);
+    const ok = document.getElementById('pay-ok');
+    ok.style.display = 'inline';
+    setTimeout(() => ok.style.display='none', 3000);
+  }
+</script>
 </body>
 </html>
