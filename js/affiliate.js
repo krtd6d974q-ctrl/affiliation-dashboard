@@ -185,7 +185,7 @@ function renderMyWithdrawals() {
     el.innerHTML = '<p class="empty">Aucun retrait effectué</p>';
     return;
   }
-  const statusLabel = { pending: '⏳ En attente', done: '✅ Traité', rejected: '❌ Refusé' };
+  const statusLabel = { pending: 'En attente', done: 'Traité', rejected: 'Refusé' };
   el.innerHTML = withdrawals.map(w => `
     <div class="activity-item">
       <span class="earn-badge withdraw-badge">-${w.amount.toFixed(2)} €</span>
@@ -210,15 +210,15 @@ function updateWithdrawMethod() {
   if (method === 'paypal') {
     textEl.innerHTML = payInfo.paypal
       ? `PayPal : <strong>${payInfo.paypal}</strong>`
-      : '⚠️ Aucun PayPal configuré — <a href="#" onclick="affShowTab(\'aff-payment\')">Configurer</a>';
+      : 'Aucun PayPal configuré — <a href="#" onclick="affShowTab(\'aff-payment\', null)">Configurer</a>';
   } else if (method === 'virement') {
     textEl.innerHTML = payInfo.iban
       ? `Virement vers <strong>${payInfo.firstname} ${payInfo.lastname}</strong> — IBAN : <strong>${payInfo.iban}</strong>`
-      : '⚠️ Aucun IBAN configuré — <a href="#" onclick="affShowTab(\'aff-payment\')">Configurer</a>';
+      : 'Aucun IBAN configuré — <a href="#" onclick="affShowTab(\'aff-payment\', null)">Configurer</a>';
   } else if (method === 'crypto') {
     textEl.innerHTML = payInfo.wallet
       ? `Wallet : <strong>${payInfo.wallet}</strong> (${payInfo.cryptoNetwork || '?'})`
-      : '⚠️ Aucun wallet configuré — <a href="#" onclick="affShowTab(\'aff-payment\')">Configurer</a>';
+      : 'Aucun wallet configuré — <a href="#" onclick="affShowTab(\'aff-payment\', null)">Configurer</a>';
   }
 }
 

@@ -4,6 +4,48 @@
 
 const ADMIN_SESSION = 'admin_logged';
 
+// ---------- Données de démo (premier lancement) ----------
+function loadDemoData() {
+  if (DB.get('demo_loaded')) return;
+
+  const affId1 = 'demo_aff_001';
+  const affId2 = 'demo_aff_002';
+  const linkId1 = 'demo_link_001';
+  const linkId2 = 'demo_link_002';
+
+  DB.saveAffiliate(affId1, {
+    id: affId1, name: 'Marie Dupont', email: 'marie@exemple.com',
+    password: 'marie123', clicks: 2340, earned: 10, balance: 10, createdAt: Date.now() - 86400000 * 5
+  });
+  DB.saveAffiliate(affId2, {
+    id: affId2, name: 'Lucas Martin', email: 'lucas@exemple.com',
+    password: 'lucas123', clicks: 870, earned: 0, balance: 0, createdAt: Date.now() - 86400000 * 2
+  });
+  DB.saveLink(linkId1, {
+    id: linkId1, affId: affId1, target: 'https://monapp.com', rate: 5,
+    clicks: 2340, createdAt: Date.now() - 86400000 * 5
+  });
+  DB.saveLink(linkId2, {
+    id: linkId2, affId: affId2, target: 'https://monapp.com', rate: 5,
+    clicks: 870, createdAt: Date.now() - 86400000 * 2
+  });
+
+  const platforms = ['iOS', 'Android', 'PC'];
+  for (let i = 0; i < 30; i++) {
+    DB.addClick({
+      id: DB.generateId(), linkId: i < 20 ? linkId1 : linkId2,
+      affId: i < 20 ? affId1 : affId2,
+      platform: platforms[Math.floor(Math.random() * 3)],
+      ts: Date.now() - Math.floor(Math.random() * 3600000)
+    });
+  }
+
+  DB.addEarning({ id: DB.generateId(), affId: affId1, linkId: linkId1, amount: 5, clicks: 1000, ts: Date.now() - 86400000 * 3 });
+  DB.addEarning({ id: DB.generateId(), affId: affId1, linkId: linkId1, amount: 5, clicks: 2000, ts: Date.now() - 86400000 });
+
+  DB.set('demo_loaded', true);
+}
+
 // ---------- Auth ----------
 function adminLogin() {
   const pass = document.getElementById('admin-password').value;
@@ -11,6 +53,7 @@ function adminLogin() {
     sessionStorage.setItem(ADMIN_SESSION, '1');
     document.getElementById('login-screen').classList.add('hidden');
     document.getElementById('dashboard').classList.remove('hidden');
+    document.getElementById('mobile-header').classList.remove('hidden');
     initDashboard();
   } else {
     document.getElementById('login-error').classList.remove('hidden');
@@ -25,6 +68,7 @@ function adminLogout() {
 // ---------- Init ----------
 function initDashboard() {
   if (sessionStorage.getItem(ADMIN_SESSION) !== '1') return;
+  loadDemoData();
   renderOverview();
   renderAffiliates();
   renderLinks();
@@ -74,7 +118,10 @@ function renderOverview() {
   // Recent activity
   const recent = clicks.slice(0, 10);
   const el = document.getElementById('recent-activity');
-  if (recent.length === 0) { el.innerHTML = '<p class="empty">Aucune activité récente</p>'; return; }
+  if (recent.length === 0) { 
+    el.innerHTML = '<p class="empty">Aucun clic enregistré pour le moment. Créez un lien et partagez-le pour commencer.</p>'; 
+    return; 
+  }
   el.innerHTML = recent.map(c => {
     const aff = DB.getAffiliate(c.affId);
     const name = aff ? aff.name : 'Inconnu';
@@ -108,7 +155,7 @@ function renderAffiliates() {
   const tbody = document.getElementById('affiliates-tbody');
   const entries = Object.entries(affiliates);
   if (entries.length === 0) {
-    tbody.innerHTML = '<tr><td colspan="6" class="empty">Aucun affilié</td></tr>';
+    tbody.innerHTML = '<tr><td colspan="6" style="text-align:center;padding:32px;color:var(--text-muted)">Aucun affilié — créez un lien pour en ajouter un</td></tr>';
     return;
   }
   tbody.innerHTML = entries.map(([id, aff]) => `
@@ -138,13 +185,12 @@ function renderLinks() {
   const tbody = document.getElementById('links-tbody');
   const entries = Object.entries(links);
   if (entries.length === 0) {
-    tbody.innerHTML = '<tr><td colspan="7" class="empty">Aucun lien</td></tr>';
+    tbody.innerHTML = '<tr><td colspan="7" style="text-align:center;padding:32px;color:var(--text-muted)">Aucun lien — utilisez "Créer un lien" pour en générer un</td></tr>';
     return;
   }
   tbody.innerHTML = entries.map(([id, link]) => {
     const aff = affiliates[link.affId];
     const name = aff ? aff.name : 'Inconnu';
-    const trackUrl = `${location.origin}${location.pathname.replace('index.html', '')}pages/track.html?lid=${id}`;
     return `<tr>
       <td><code>${id}</code></td>
       <td>${name}</td>
@@ -179,13 +225,14 @@ function renderWithdrawals() {
   }
 
   document.getElementById('no-withdrawals').style.display = withdrawals.length === 0 ? 'block' : 'none';
+  document.querySelector('#withdrawals-table') && (document.querySelector('#withdrawals-table').style.display = withdrawals.length === 0 ? 'none' : 'table');
 
   tbody.innerHTML = withdrawals.map(w => {
     const aff = affiliates[w.affId];
     const name = aff ? aff.name : 'Inconnu';
     const methodLabel = { paypal: 'PayPal', virement: 'Virement', crypto: 'Crypto' }[w.method] || w.method;
     const statusClass = { pending: 'status-pending', done: 'status-done', rejected: 'status-rejected' }[w.status];
-    const statusLabel = { pending: '⏳ En attente', done: '✅ Traité', rejected: '❌ Refusé' }[w.status];
+    const statusLabel = { pending: 'En attente', done: 'Traité', rejected: 'Refusé' }[w.status];
 
     let details = '';
     if (w.method === 'paypal') details = w.paypal || '-';
@@ -201,8 +248,8 @@ function renderWithdrawals() {
       <td><span class="status-badge ${statusClass}">${statusLabel}</span></td>
       <td>
         ${w.status === 'pending' ? `
-          <button class="btn-sm btn-green" onclick="processWithdrawal('${w.id}','done')">✅ Traiter</button>
-          <button class="btn-sm" onclick="processWithdrawal('${w.id}','rejected')">❌ Refuser</button>
+          <button class="btn-sm btn-green" onclick="processWithdrawal('${w.id}','done')">Traiter</button>
+          <button class="btn-sm btn-red" onclick="processWithdrawal('${w.id}','rejected')">Refuser</button>
         ` : '—'}
       </td>
     </tr>`;

@@ -1,0 +1,19 @@
+{
+  "enabled": true,
+  "name": "Auto Git Push",
+  "description": "Commit et push automatiquement vers GitHub après chaque modification de fichier HTML, JS ou CSS",
+  "version": "1",
+  "when": {
+    "type": "fileEdited",
+    "patterns": [
+      "*.html",
+      "*.js",
+      "*.css"
+    ]
+  },
+  "then": {
+    "type": "runCommand",
+    "command": "cd C:\\Users\\naomn\\Desktop\\affiliation && git add . && git commit -m \"auto: mise a jour\" && git push",
+    "timeout": 30
+  }
+}
