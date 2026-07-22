@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Créer un lien — AffiliTrack</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="../css/style.css" />
+</head>
+<body>
+  <div id="app"></div>
+  <script src="../js/data.js"></script>
+  <script src="../js/admin-nav.js"></script>
+  <script>
+    checkAdminAuth();
+
+    let createdTrackUrl = '';
+    let createdAffUrl = '';
+
+    function createLink() {
+      const name     = document.getElementById('aff-name').value.trim();
+      const email    = document.getElementById('aff-email').value.trim();
+      const target   = document.getElementById('aff-target').value.trim();
+      const rate     = parseFloat(document.getElementById('aff-rate').value) || 5;
+      const password = document.getElementById('aff-password').value.trim();
+
+      document.querySelectorAll('.field-error').forEach(e => e.remove());
+      let hasError = false;
+
+      if (!name)     { showError('aff-name', 'Champ requis');     hasError = true; }
+      if (!email)    { showError('aff-email', 'Champ requis');    hasError = true; }
+      if (!target)   { showError('aff-target', 'Champ requis');   hasError = true; }
+      if (!password) { showError('aff-password', 'Champ requis'); hasError = true; }
+      if (hasError) return;
+
+      const affId  = DB.generateId();
+      const linkId = DB.generateId();
+      const base   = location.origin + location.pathname.replace('pages/create.html', '');
+
+      DB.saveAffiliate(affId, { id:affId, name, email, password, clicks:0, earned:0, balance:0, createdAt:Date.now() });
+      DB.saveLink(linkId, { id:linkId, affId, target, rate, clicks:0, createdAt:Date.now() });
+
+      createdTrackUrl = base + 'pages/track.html?lid=' + linkId;
+      createdAffUrl   = base + 'pages/affiliate.html?id=' + affId;
+
+      document.getElementById('result-box').style.display = 'block';
+      document.getElementById('out-track').value = createdTrackUrl;
+      document.getElementById('out-aff').value   = createdAffUrl;
+      document.getElementById('create-form').style.display = 'none';
+    }
+
+    function showError(fieldId, msg) {
+      const el = document.getElementById(fieldId);
+      const err = document.createElement('p');
+      err.className = 'field-error';
+      err.textContent = msg;
+      el.parentNode.appendChild(err);
+    }
+
+    function copyField(id) {
+      const val = document.getElementById(id).value;
+      navigator.clipboard.writeText(val).then(() => {
+        const btn = document.querySelector(`[data-copy="${id}"]`);
+        if (btn) { btn.textContent = 'Copié !'; setTimeout(() => btn.textContent = 'Copier', 2000); }
+      });
+    }
+
+    function resetForm() {
+      document.getElementById('result-box').style.display = 'none';
+      document.getElementById('create-form').style.display = 'block';
+      document.getElementById('aff-name').value = '';
+      document.getElementById('aff-email').value = '';
+      document.getElementById('aff-target').value = '';
+      document.getElementById('aff-rate').value = '5';
+      document.getElementById('aff-password').value = '';
+    }
+
+    function render() {
+      const content = `
+        <div class="page-header"><h2>Créer un lien affilié</h2><p>Générez un lien de tracking personnalisé pour un affilié</p></div>
+
+        <div id="create-form" class="form-card">
+          <div class="form-group"><label>Nom de l'affilié</label><input type="text" id="aff-name" placeholder="Jean Dupont" /></div>
+          <div class="form-group"><label>Email</label><input type="email" id="aff-email" placeholder="jean@exemple.com" /></div>
+          <div class="form-group"><label>URL de destination (votre app)</label><input type="url" id="aff-target" placeholder="https://monapp.com" /></div>
+          <div class="form-group"><label>Taux — € par 1 000 clics</label><input type="number" id="aff-rate" value="5" min="1" /></div>
+          <div class="form-group"><label>Mot de passe du compte affilié</label><input type="text" id="aff-password" placeholder="Mot de passe que l'affilié utilisera" /></div>
+          <button class="btn-primary" onclick="createLink()">Générer le lien</button>
+        </div>
+
+        <div id="result-box" class="created-link" style="display:none">
+          <h3>Lien créé avec succès</h3>
+          <p>Lien de tracking à donner à l'affilié :</p>
+          <div class="link-copy">
+            <input type="text" id="out-track" readonly />
+            <button data-copy="out-track" onclick="copyField('out-track')">Copier</button>
+          </div>
+          <p>Lien du dashboard affilié :</p>
+          <div class="link-copy">
+            <input type="text" id="out-aff" readonly />
+            <button data-copy="out-aff" onclick="copyField('out-aff')">Copier</button>
+          </div>
+          <div style="margin-top:20px;display:flex;gap:12px;flex-wrap:wrap">
+            <button class="btn-primary" onclick="resetForm()">Créer un autre lien</button>
+            <a href="affiliates.html" class="btn-sm" style="padding:11px 18px">Voir les affiliés</a>
+          </div>
+        </div>`;
+
+      document.getElementById('app').innerHTML = buildMobileHeader() + `
+        <div class="app-layout">
+          ${buildSidebar('create')}
+          <main class="content">${content}</main>
+        </div>`;
+    }
+
+    window.addEventListener('DOMContentLoaded', render);
+  </script>
+</body>
+</html>

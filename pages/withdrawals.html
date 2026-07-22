@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Retraits — AffiliTrack</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="../css/style.css" />
+</head>
+<body>
+  <div id="app"></div>
+  <script src="../js/data.js"></script>
+  <script src="../js/admin-nav.js"></script>
+  <script>
+    checkAdminAuth();
+
+    function processWithdrawal(id, status) {
+      DB.updateWithdrawal(id, { status, processedAt: Date.now() });
+      if (status === 'rejected') {
+        const w = DB.getWithdrawals().find(x => x.id === id);
+        if (w) {
+          const aff = DB.getAffiliate(w.affId);
+          if (aff) { aff.balance = (aff.balance||0) + w.amount; DB.saveAffiliate(w.affId, aff); }
+        }
+      }
+      render();
+    }
+
+    function render() {
+      const withdrawals = DB.getWithdrawals();
+      const affiliates = DB.getAffiliates();
+      const pending = withdrawals.filter(w => w.status === 'pending');
+
+      const statusMap = { pending: ['status-pending','En attente'], done: ['status-done','Traité'], rejected: ['status-rejected','Refusé'] };
+      const methodMap = { paypal:'PayPal', virement:'Virement', crypto:'Crypto' };
+
+      const rowsHTML = withdrawals.length === 0
+        ? `<tr><td colspan="7" class="table-empty">Aucune demande de retrait pour le moment</td></tr>`
+        : withdrawals.map(w => {
+            const aff = affiliates[w.affId];
+            const [cls, label] = statusMap[w.status] || ['',''];
+            let details = '';
+            if (w.method==='paypal') details = w.paypal||'-';
+            else if (w.method==='virement') details = `${w.firstname} ${w.lastname} — ${w.iban||'-'}`;
+            else if (w.method==='crypto') details = `${w.wallet||'-'} (${w.network||'-'})`;
+            return `<tr>
+              <td><strong>${aff ? aff.name : 'Inconnu'}</strong></td>
+              <td><strong>${w.amount.toFixed(2)} €</strong></td>
+              <td>${methodMap[w.method]||w.method}</td>
+              <td class="details-cell">${details}</td>
+              <td>${DB.formatDate(w.ts)}</td>
+              <td><span class="status-badge ${cls}">${label}</span></td>
+              <td>${w.status==='pending'
+                ? `<button class="btn-sm btn-green" onclick="processWithdrawal('${w.id}','done')">Traiter</button>
+                   <button class="btn-sm btn-red" onclick="processWithdrawal('${w.id}','rejected')" style="margin-top:4px">Refuser</button>`
+                : '—'}</td>
+            </tr>`;
+          }).join('');
+
+      const content = `
+        <div class="page-header">
+          <h2>Demandes de retrait</h2>
+          <p>${pending.length} demande(s) en attente</p>
+        </div>
+        ${pending.length > 0 ? `<div class="alert-banner">${pending.length} demande(s) nécessitent votre attention</div>` : ''}
+        <div class="table-wrap">
+          <table>
+            <thead><tr><th>Affilié</th><th>Montant</th><th>Méthode</th><th>Détails</th><th>Date</th><th>Statut</th><th>Action</th></tr></thead>
+            <tbody>${rowsHTML}</tbody>
+          </table>
+        </div>`;
+
+      document.getElementById('app').innerHTML = buildMobileHeader() + `
+        <div class="app-layout">
+          ${buildSidebar('withdrawals')}
+          <main class="content">${content}</main>
+        </div>`;
+    }
+
+    window.addEventListener('DOMContentLoaded', () => {
+      render();
+      setInterval(render, 5000);
+    });
+  </script>
+</body>
+</html>

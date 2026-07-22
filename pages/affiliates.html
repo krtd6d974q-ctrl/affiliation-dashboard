@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Affiliés — AffiliTrack</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="../css/style.css" />
+</head>
+<body>
+  <div id="app"></div>
+  <script src="../js/data.js"></script>
+  <script src="../js/admin-nav.js"></script>
+  <script>
+    checkAdminAuth();
+
+    function deleteAffiliate(id) {
+      if (!confirm('Supprimer cet affilié et son lien ?')) return;
+      const affs = DB.getAffiliates(); delete affs[id]; DB.saveAffiliates(affs);
+      const links = DB.getLinks();
+      Object.entries(links).forEach(([lid, l]) => { if(l.affId === id) { delete links[lid]; } });
+      DB.saveLinks(links);
+      render();
+    }
+
+    function render() {
+      const affiliates = DB.getAffiliates();
+      const entries = Object.entries(affiliates);
+
+      const rowsHTML = entries.length === 0
+        ? `<tr><td colspan="6" class="table-empty">Aucun affilié — <a href="create.html">Créer un lien</a> pour en ajouter un</td></tr>`
+        : entries.map(([id, aff]) => `
+          <tr>
+            <td><strong>${aff.name}</strong></td>
+            <td>${aff.email}</td>
+            <td>${(aff.clicks||0).toLocaleString('fr-FR')}</td>
+            <td>${(aff.earned||0).toFixed(2)} €</td>
+            <td><span class="balance-pill">${(aff.balance||0).toFixed(2)} €</span></td>
+            <td><button class="btn-sm btn-red" onclick="deleteAffiliate('${id}')">Supprimer</button></td>
+          </tr>`).join('');
+
+      const content = `
+        <div class="page-header"><h2>Affiliés</h2><p>${entries.length} affilié(s) enregistré(s)</p></div>
+        <div class="table-wrap">
+          <table>
+            <thead><tr><th>Nom</th><th>Email</th><th>Clics</th><th>Revenus</th><th>Solde</th><th></th></tr></thead>
+            <tbody>${rowsHTML}</tbody>
+          </table>
+        </div>
+        <div style="margin-top:20px">
+          <a href="create.html" class="btn-primary">+ Créer un nouvel affilié</a>
+        </div>`;
+
+      document.getElementById('app').innerHTML = buildMobileHeader() + `
+        <div class="app-layout">
+          ${buildSidebar('affiliates')}
+          <main class="content">${content}</main>
+        </div>`;
+    }
+
+    window.addEventListener('DOMContentLoaded', render);
+  </script>
+</body>
+</html>

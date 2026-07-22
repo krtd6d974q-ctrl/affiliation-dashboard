@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Admin — AffiliTrack</title>
+  <title>AffiliTrack — Admin</title>
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
   <link rel="stylesheet" href="css/style.css" />
@@ -22,177 +22,93 @@
     </div>
   </div>
 
-  <!-- MOBILE HEADER -->
-  <header class="mobile-header hidden" id="mobile-header">
-    <span class="mobile-logo">AffiliTrack</span>
-    <button class="hamburger" id="hamburger" onclick="toggleMenu()">
-      <span></span><span></span><span></span>
-    </button>
-  </header>
-  <div class="overlay" id="overlay" onclick="closeMenu()"></div>
-
   <!-- DASHBOARD -->
-  <div id="dashboard" class="app-layout hidden">
-    <aside class="sidebar" id="sidebar">
-      <div class="sidebar-top">
-        <div class="logo">AffiliTrack <span>Dashboard Admin</span></div>
-      </div>
-      <nav>
-        <span class="nav-section">Principal</span>
-        <button class="nav-item active" onclick="showTab('overview',this)">
-          <svg class="nav-icon" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 10h16M4 14h10"/></svg>
-          Vue globale
-        </button>
-        <button class="nav-item" onclick="showTab('affiliates',this)">
-          <svg class="nav-icon" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a4 4 0 00-5-3.87M9 20H4v-2a4 4 0 015-3.87m6-4.13a4 4 0 11-8 0 4 4 0 018 0z"/></svg>
-          Affiliés
-        </button>
-        <button class="nav-item" onclick="showTab('links',this)">
-          <svg class="nav-icon" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13.828 10.172a4 4 0 00-5.656 0l-4 4a4 4 0 105.656 5.656l1.102-1.101"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14.828 14.828a4 4 0 015.656 0l.172.172A4 4 0 0114.828 20.5"/></svg>
-          Liens
-        </button>
-        <button class="nav-item" onclick="showTab('withdrawals',this)">
-          <svg class="nav-icon" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-2.21 0-4 1.343-4 3s1.79 3 4 3 4 1.343 4 3-1.79 3-4 3m0-18v2m0 16v2"/></svg>
-          Retraits
-          <span id="withdrawal-badge" class="badge hidden">0</span>
-        </button>
-        <span class="nav-section">Actions</span>
-        <button class="nav-item" onclick="showTab('create',this)">
-          <svg class="nav-icon" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/></svg>
-          Créer un lien
-        </button>
-      </nav>
-      <div class="sidebar-bottom">
-        <button class="logout-btn" onclick="adminLogout()">Déconnexion</button>
-      </div>
-    </aside>
-
-    <main class="content">
-
-      <!-- OVERVIEW -->
-      <section id="tab-overview" class="tab active">
-        <div class="page-header">
-          <h2>Vue globale</h2>
-          <p>Suivi en temps réel de toute l'activité</p>
-        </div>
-        <div class="stats-grid">
-          <div class="stat-card accent">
-            <div class="stat-label">Clics totaux</div>
-            <div class="stat-value" id="total-clicks">0</div>
-          </div>
-          <div class="stat-card green">
-            <div class="stat-label">Revenus distribués</div>
-            <div class="stat-value" id="total-revenue">0 €</div>
-          </div>
-          <div class="stat-card">
-            <div class="stat-label">Affiliés actifs</div>
-            <div class="stat-value" id="total-affiliates">0</div>
-          </div>
-          <div class="stat-card">
-            <div class="stat-label">Liens créés</div>
-            <div class="stat-value" id="total-links">0</div>
-          </div>
-        </div>
-        <div class="section-card">
-          <div class="section-title">Répartition plateformes</div>
-          <div id="global-platforms"></div>
-        </div>
-        <div class="section-card">
-          <div class="section-title">Activité récente</div>
-          <div id="recent-activity" class="activity-list"></div>
-        </div>
-      </section>
-
-      <!-- AFFILIATES -->
-      <section id="tab-affiliates" class="tab hidden">
-        <div class="page-header"><h2>Affiliés</h2></div>
-        <div class="table-wrap">
-          <table>
-            <thead><tr>
-              <th>Nom</th><th>Email</th><th>Clics</th>
-              <th>Revenus</th><th>Solde</th><th>Action</th>
-            </tr></thead>
-            <tbody id="affiliates-tbody"></tbody>
-          </table>
-        </div>
-      </section>
-
-      <!-- LINKS -->
-      <section id="tab-links" class="tab hidden">
-        <div class="page-header"><h2>Tous les liens</h2></div>
-        <div class="table-wrap">
-          <table>
-            <thead><tr>
-              <th>ID</th><th>Affilié</th><th>URL cible</th>
-              <th>Clics</th><th>Revenus</th><th>Créé le</th><th></th>
-            </tr></thead>
-            <tbody id="links-tbody"></tbody>
-          </table>
-        </div>
-      </section>
-
-      <!-- WITHDRAWALS -->
-      <section id="tab-withdrawals" class="tab hidden">
-        <div class="page-header"><h2>Demandes de retrait</h2></div>
-        <div id="no-withdrawals" class="empty-state">Aucune demande en attente</div>
-        <div class="table-wrap">
-          <table>
-            <thead><tr>
-              <th>Affilié</th><th>Montant</th><th>Méthode</th>
-              <th>Détails</th><th>Date</th><th>Statut</th><th>Action</th>
-            </tr></thead>
-            <tbody id="withdrawals-tbody"></tbody>
-          </table>
-        </div>
-      </section>
-
-      <!-- CREATE LINK -->
-      <section id="tab-create" class="tab hidden">
-        <div class="page-header">
-          <h2>Créer un lien affilié</h2>
-          <p>Remplissez le formulaire pour générer un lien de tracking personnalisé</p>
-        </div>
-        <div class="form-card">
-          <div class="form-group"><label>Nom de l'affilié</label>
-            <input type="text" id="aff-name" placeholder="Jean Dupont" /></div>
-          <div class="form-group"><label>Email</label>
-            <input type="email" id="aff-email" placeholder="jean@exemple.com" /></div>
-          <div class="form-group"><label>URL de destination</label>
-            <input type="url" id="aff-target" placeholder="https://monapp.com" /></div>
-          <div class="form-group"><label>Taux (€ par 1 000 clics)</label>
-            <input type="number" id="aff-rate" value="5" min="1" /></div>
-          <div class="form-group"><label>Mot de passe du compte affilié</label>
-            <input type="text" id="aff-password" placeholder="Mot de passe" /></div>
-          <button class="btn-primary" onclick="createLink()">Créer le lien</button>
-        </div>
-        <div id="created-link-box" class="created-link hidden">
-          <h3>Lien créé avec succès</h3>
-          <p>Lien de tracking :</p>
-          <div class="link-copy">
-            <input type="text" id="generated-link" readonly />
-            <button onclick="copyLink()">Copier</button>
-          </div>
-          <p>Dashboard affilié :</p>
-          <div class="link-copy">
-            <input type="text" id="affiliate-dashboard-link" readonly />
-            <button onclick="copyAffLink()">Copier</button>
-          </div>
-        </div>
-      </section>
-
-    </main>
-  </div>
-
-  <!-- NOTIF -->
-  <div id="notif-popup" class="notif-popup hidden">
-    <div class="notif-content">
-      <div class="notif-dot"></div>
-      <div id="notif-text"></div>
-      <button onclick="closeNotif()">✕</button>
-    </div>
-  </div>
+  <div id="app" class="hidden"></div>
 
   <script src="js/data.js"></script>
-  <script src="js/admin.js"></script>
+  <script src="js/admin-nav.js"></script>
+  <script>
+    function adminLogin() {
+      const pass = document.getElementById('admin-password').value;
+      if (pass === DB.getAdminPassword()) {
+        sessionStorage.setItem(ADMIN_SESSION, '1');
+        showDashboard();
+      } else {
+        document.getElementById('login-error').classList.remove('hidden');
+      }
+    }
+
+    function showDashboard() {
+      document.getElementById('login-screen').classList.add('hidden');
+      document.getElementById('app').classList.remove('hidden');
+      loadDemoData();
+      renderPage();
+    }
+
+    function loadDemoData() {
+      if (DB.get('demo_loaded')) return;
+      const a1 = 'demo_aff_001', a2 = 'demo_aff_002';
+      const l1 = 'demo_link_001', l2 = 'demo_link_002';
+      DB.saveAffiliate(a1, { id:a1, name:'Marie Dupont', email:'marie@exemple.com', password:'marie123', clicks:2340, earned:10, balance:10, createdAt: Date.now()-86400000*5 });
+      DB.saveAffiliate(a2, { id:a2, name:'Lucas Martin', email:'lucas@exemple.com', password:'lucas123', clicks:870, earned:0, balance:0, createdAt: Date.now()-86400000*2 });
+      DB.saveLink(l1, { id:l1, affId:a1, target:'https://monapp.com', rate:5, clicks:2340, createdAt: Date.now()-86400000*5 });
+      DB.saveLink(l2, { id:l2, affId:a2, target:'https://monapp.com', rate:5, clicks:870, createdAt: Date.now()-86400000*2 });
+      ['iOS','Android','PC'].forEach((p,pi) => {
+        for(let i=0;i<10;i++) DB.addClick({ id:DB.generateId(), linkId:pi<2?l1:l2, affId:pi<2?a1:a2, platform:p, ts:Date.now()-Math.random()*3600000 });
+      });
+      DB.addEarning({ id:DB.generateId(), affId:a1, linkId:l1, amount:5, clicks:1000, ts:Date.now()-86400000*3 });
+      DB.addEarning({ id:DB.generateId(), affId:a1, linkId:l1, amount:5, clicks:2000, ts:Date.now()-86400000 });
+      DB.set('demo_loaded', true);
+    }
+
+    function renderPage() {
+      const clicks = DB.getClicks();
+      const affiliates = DB.getAffiliates();
+      const links = DB.getLinks();
+      const totalClicks = clicks.length;
+      const totalRevenue = Object.values(affiliates).reduce((s,a) => s+(a.earned||0), 0);
+      const totalAff = Object.keys(affiliates).length;
+      const totalLinks = Object.keys(links).length;
+
+      const platforms = { iOS:0, Android:0, PC:0 };
+      clicks.forEach(c => { if(platforms[c.platform]!==undefined) platforms[c.platform]++; });
+      const colors = { iOS:'#6366f1', Android:'#10b981', PC:'#f59e0b' };
+      const barsHTML = totalClicks === 0
+        ? '<p class="empty">Aucun clic enregistré</p>'
+        : Object.entries(platforms).map(([n,c]) => {
+            const pct = Math.round((c/totalClicks)*100);
+            return `<div class="platform-row"><span class="platform-label">${n}</span><div class="bar-track"><div class="bar-fill" style="width:${pct}%;background:${colors[n]}"></div></div><span class="platform-count">${c} (${pct}%)</span></div>`;
+          }).join('');
+
+      const recentHTML = clicks.slice(0,10).map(c => {
+        const aff = DB.getAffiliate(c.affId);
+        return `<div class="activity-item"><span class="platform-tag platform-${c.platform.toLowerCase()}">${c.platform}</span><span>${aff?aff.name:'Inconnu'}</span><span class="activity-time">${DB.formatDate(c.ts)}</span></div>`;
+      }).join('') || '<p class="empty">Aucune activité récente</p>';
+
+      const content = `
+        <div class="page-header"><h2>Vue globale</h2><p>Suivi en temps réel</p></div>
+        <div class="stats-grid">
+          <div class="stat-card accent"><div class="stat-label">Clics totaux</div><div class="stat-value">${totalClicks.toLocaleString('fr-FR')}</div></div>
+          <div class="stat-card green"><div class="stat-label">Revenus distribués</div><div class="stat-value">${totalRevenue.toFixed(2)} €</div></div>
+          <div class="stat-card"><div class="stat-label">Affiliés actifs</div><div class="stat-value">${totalAff}</div></div>
+          <div class="stat-card"><div class="stat-label">Liens créés</div><div class="stat-value">${totalLinks}</div></div>
+        </div>
+        <div class="section-card"><div class="section-title">Répartition plateformes</div>${barsHTML}</div>
+        <div class="section-card"><div class="section-title">Activité récente</div><div class="activity-list">${recentHTML}</div></div>`;
+
+      document.getElementById('app').innerHTML = buildMobileHeader() + `
+        <div class="app-layout">
+          ${buildSidebar('overview')}
+          <main class="content">${content}</main>
+        </div>`;
+
+      setInterval(renderPage, 5000);
+    }
+
+    window.addEventListener('DOMContentLoaded', () => {
+      if (sessionStorage.getItem(ADMIN_SESSION) === '1') showDashboard();
+      document.getElementById('admin-password').addEventListener('keydown', e => { if(e.key==='Enter') adminLogin(); });
+    });
+  </script>
 </body>
 </html>
