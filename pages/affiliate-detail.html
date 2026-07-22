@@ -114,7 +114,7 @@
           <div class="card-head"><span class="card-title">${myLink ? 'Regénérer le lien' : 'Générer un lien'}</span></div>
           <div class="card-body">
             <div class="form-row"><label>URL de destination (votre app)</label>
-              <input id="link-target" type="url" placeholder="https://monapp.com" value="${myLink ? myLink[1].target : ''}" /></div>
+              <input id="link-target" type="url" placeholder="https://apps.apple.com/us/app/crush-assistant-drague/id6783893349" value="${myLink ? myLink[1].target : 'https://apps.apple.com/us/app/crush-assistant-drague/id6783893349'}" /></div>
             <div class="form-row"><label>Taux — € par 1 000 clics</label>
               <input id="link-rate" type="number" value="${myLink ? myLink[1].rate : 5}" min="1" /></div>
             <button class="btn btn-primary" onclick="generateLink()">${myLink ? 'Regénérer' : 'Générer le lien'}</button>
