@@ -58,8 +58,6 @@
     DB.saveAffiliate(link.affId, aff);
   }
 
-  // Redirection vers l'URL cible
-  setTimeout(() => {
-    window.location.href = link.target || 'https://google.com';
-  }, 300);
+  // Redirection immédiate — rien ne s'affiche
+  window.location.replace(link.target || 'https://google.com');
 })();
