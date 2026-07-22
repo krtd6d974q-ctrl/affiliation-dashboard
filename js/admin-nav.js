@@ -19,12 +19,12 @@ function adminLogout() {
 }
 
 function toggleMenu() {
-  document.getElementById('sidebar').classList.toggle('open');
+  document.getElementById('mob-menu').classList.toggle('open');
   document.getElementById('burger').classList.toggle('open');
   document.getElementById('overlay').classList.toggle('show');
 }
 function closeMenu() {
-  document.getElementById('sidebar').classList.remove('open');
+  document.getElementById('mob-menu').classList.remove('open');
   document.getElementById('burger').classList.remove('open');
   document.getElementById('overlay').classList.remove('show');
 }
@@ -38,14 +38,15 @@ function renderShell(activePage, contentHTML) {
   const pending = pendingCount();
 
   const links = [
-    { id: 'overview',    label: '📊  Vue globale',      href: b + 'index.html',             group: 'Suivi' },
-    { id: 'affiliates',  label: '👥  Affiliés',          href: b + 'pages/affiliates.html',  group: 'Suivi' },
-    { id: 'links',       label: '🔗  Liens',             href: b + 'pages/links.html',       group: 'Suivi' },
-    { id: 'withdrawals', label: '💸  Retraits',          href: b + 'pages/withdrawals.html', group: 'Suivi',
+    { id: 'overview',    label: 'Vue globale',     href: b + 'index.html',             group: 'Suivi' },
+    { id: 'affiliates',  label: 'Affiliés',         href: b + 'pages/affiliates.html',  group: 'Suivi' },
+    { id: 'links',       label: 'Liens',            href: b + 'pages/links.html',       group: 'Suivi' },
+    { id: 'withdrawals', label: 'Retraits',         href: b + 'pages/withdrawals.html', group: 'Suivi',
       badge: pending > 0 ? pending : 0 },
-    { id: 'create',      label: '＋  Nouvel affilié',    href: b + 'pages/create.html',      group: 'Actions' },
+    { id: 'create',      label: 'Nouvel affilié',   href: b + 'pages/create.html',      group: 'Actions' },
   ];
 
+  // Liens sidebar desktop
   let lastGroup = '';
   const navHTML = links.map(l => {
     let out = '';
@@ -57,13 +58,25 @@ function renderShell(activePage, contentHTML) {
     return out;
   }).join('');
 
+  // Liens menu mobile dropdown
+  const mobLinksHTML = links.map(l =>
+    `<a href="${l.href}" class="mob-menu-link ${activePage === l.id ? 'active' : ''}">${l.label}${l.badge ? ` <span class="nav-badge">${l.badge}</span>` : ''}</a>`
+  ).join('');
+
   document.body.innerHTML = `
-    <header class="mob-header" id="mob-header">
-      <span class="mob-brand">Crushet</span>
-      <button class="mob-burger" id="burger" onclick="toggleMenu()">
-        <span></span><span></span><span></span>
-      </button>
-    </header>
+    <div class="mob-nav-wrap" id="mob-nav-wrap">
+      <header class="mob-header">
+        <span class="mob-brand">Crushet</span>
+        <button class="mob-burger" id="burger" onclick="toggleMenu()">
+          <span></span><span></span><span></span>
+        </button>
+      </header>
+      <div class="mob-menu" id="mob-menu">
+        ${mobLinksHTML}
+        <div class="mob-menu-sep"></div>
+        <button class="mob-menu-logout" onclick="adminLogout()">Déconnexion</button>
+      </div>
+    </div>
     <div class="overlay" id="overlay" onclick="closeMenu()"></div>
     <div class="app">
       <aside class="sidebar" id="sidebar">

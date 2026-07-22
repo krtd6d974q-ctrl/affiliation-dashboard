@@ -848,28 +848,21 @@ code {
    RESPONSIVE
    ========================================================= */
 @media (max-width: 768px) {
-  .mob-header { display: flex; }
+  .mob-nav-wrap { display: flex; }
 
-  /* Décale le contenu pour ne pas être sous la pill */
-  .app { padding-top: calc(var(--header-h) + 14px); }
+  /* Décale le contenu sous la pill (52px) + gap (14px) + marge (14px) */
+  .app { padding-top: 80px; }
 
-  .sidebar {
-    position: fixed;
-    top: 0;
-    height: 100vh;
-    transform: translateX(-100%);
-  }
-  .sidebar.open {
-    transform: translateX(0);
-    box-shadow: 8px 0 32px rgba(0,0,0,.45);
-  }
+  /* La sidebar desktop est cachée en mobile */
+  .sidebar { display: none; }
+
   .main { padding: 20px 16px; }
   .stats-row { grid-template-columns: 1fr 1fr; }
   .form-card { max-width: 100%; }
 }
 
 @media (max-width: 480px) {
-  .mob-header { left: 12px; right: 12px; }
+  .mob-nav-wrap { left: 12px; right: 12px; }
   .stats-row { grid-template-columns: 1fr; }
   .main { padding: 16px 12px; }
   .card-body { padding: 16px; }
