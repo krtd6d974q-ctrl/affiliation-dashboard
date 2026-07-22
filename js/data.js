@@ -1,123 +1,146 @@
 // ============================================================
-// data.js — Stockage localStorage (fonctionne partout)
+// data.js — Supabase comme base de données
+// Toutes les données sont persistées dans Supabase
 // ============================================================
 
+const SUPABASE_URL = 'https://titrqeounaoxpjgtvcy.supabase.co';
+const SUPABASE_KEY = 'sb_publishable_JJ1J7KDX-npk66ZIB2AiWw_cFc5EXx8';
+
 const DB = {
-  ADMIN_PASS:  'crush_admin_pass',
-  AFFILIATES:  'crush_affiliates',
-  LINKS:       'crush_links',
-  CLICKS:      'crush_clicks',
-  WITHDRAWALS: 'crush_withdrawals',
-  EARNINGS:    'crush_earnings',
-
   DEFAULT_RATE: 5,
+  _cache: {},
 
-  _get(key) {
-    try { return JSON.parse(localStorage.getItem(key)); } catch { return null; }
-  },
-  _set(key, value) {
-    localStorage.setItem(key, JSON.stringify(value));
+  // ── Requête Supabase REST ──
+  async _req(table, method, body, params) {
+    let url = `${SUPABASE_URL}/rest/v1/${table}`;
+    if (params) url += '?' + params;
+    const res = await fetch(url, {
+      method,
+      headers: {
+        'apikey':        SUPABASE_KEY,
+        'Authorization': 'Bearer ' + SUPABASE_KEY,
+        'Content-Type':  'application/json',
+        'Prefer':        method === 'POST' ? 'resolution=merge-duplicates,return=minimal' : 'return=minimal',
+      },
+      body: body ? JSON.stringify(body) : undefined,
+    });
+    if (!res.ok) {
+      const err = await res.text();
+      console.error(`[DB] ${method} ${table} failed:`, err);
+      return null;
+    }
+    const text = await res.text();
+    return text ? JSON.parse(text) : null;
   },
 
-  // ── Admin ──
-  getAdminPassword() { return this._get(this.ADMIN_PASS) || 'Tiimeeo87'; },
+  // ── Lecture d'une table (retourne un objet {id: data} ou tableau) ──
+  async _getAll(table) {
+    if (this._cache[table] !== undefined) return this._cache[table];
+    const rows = await this._req(table, 'GET', null, 'select=id,data');
+    if (!rows) return table === 'clicks' || table === 'withdrawals' || table === 'earnings' ? [] : {};
+    let result;
+    if (table === 'clicks' || table === 'withdrawals' || table === 'earnings') {
+      result = rows.map(r => ({ id: r.id, ...r.data }));
+    } else {
+      result = {};
+      rows.forEach(r => { result[r.id] = { id: r.id, ...r.data }; });
+    }
+    this._cache[table] = result;
+    return result;
+  },
+
+  // ── Écriture d'une ligne ──
+  async _upsert(table, id, data) {
+    // Met à jour le cache immédiatement
+    if (table === 'clicks' || table === 'withdrawals' || table === 'earnings') {
+      if (!this._cache[table]) this._cache[table] = [];
+      const idx = this._cache[table].findIndex(r => r.id === id);
+      if (idx >= 0) this._cache[table][idx] = { id, ...data };
+      else this._cache[table].unshift({ id, ...data });
+    } else {
+      if (!this._cache[table]) this._cache[table] = {};
+      this._cache[table][id] = { id, ...data };
+    }
+    // Sauvegarde en base
+    await this._req(table, 'POST', { id, data });
+  },
+
+  // ── Suppression ──
+  async _delete(table, id) {
+    if (this._cache[table]) {
+      if (Array.isArray(this._cache[table])) {
+        this._cache[table] = this._cache[table].filter(r => r.id !== id);
+      } else {
+        delete this._cache[table][id];
+      }
+    }
+    await this._req(table, 'DELETE', null, `id=eq.${id}`);
+  },
+
+  invalidate(table) {
+    if (table) delete this._cache[table];
+    else this._cache = {};
+  },
+
+  // ── Admin password ──
+  async getAdminPassword() {
+    const rows = await this._req('config', 'GET', null, 'key=eq.adminPassword&select=value');
+    return rows && rows[0] ? rows[0].value : 'Tiimeeo87';
+  },
 
   // ── Affiliates ──
-  getAffiliates()         { return this._get(this.AFFILIATES) || {}; },
-  saveAffiliates(data)    { this._set(this.AFFILIATES, data); },
-  getAffiliate(id)        { return this.getAffiliates()[id] || null; },
-  saveAffiliate(id, data) {
-    const all = this.getAffiliates();
-    all[id] = data;
-    this.saveAffiliates(all);
+  async getAffiliates()       { return await this._getAll('affiliates'); },
+  async getAffiliate(id)      { const all = await this.getAffiliates(); return all[id] || null; },
+  async saveAffiliate(id, data) { await this._upsert('affiliates', id, data); },
+  async saveAffiliates(obj) {
+    for (const [id, data] of Object.entries(obj)) {
+      await this._upsert('affiliates', id, data);
+    }
   },
+  async deleteAffiliate(id) { await this._delete('affiliates', id); },
 
   // ── Links ──
-  getLinks()            { return this._get(this.LINKS) || {}; },
-  saveLinks(data)       { this._set(this.LINKS, data); },
-  getLink(id)           { return this.getLinks()[id] || null; },
-  saveLink(id, data)    {
-    const all = this.getLinks();
-    all[id] = data;
-    this.saveLinks(all);
+  async getLinks()           { return await this._getAll('links'); },
+  async getLink(id)          { const all = await this.getLinks(); return all[id] || null; },
+  async saveLink(id, data)   { await this._upsert('links', id, data); },
+  async saveLinks(obj) {
+    // Recalcule ce qui doit être supprimé vs upsert
+    const current = await this.getLinks();
+    for (const id of Object.keys(current)) {
+      if (!obj[id]) await this._delete('links', id);
+    }
+    for (const [id, data] of Object.entries(obj)) {
+      await this._upsert('links', id, data);
+    }
   },
 
   // ── Clicks ──
-  getClicks()           { return this._get(this.CLICKS) || []; },
-  addClick(click) {
-    const all = this.getClicks();
-    all.unshift(click);
-    if (all.length > 5000) all.pop();
-    this._set(this.CLICKS, all);
+  async getClicks()          { return await this._getAll('clicks'); },
+  async addClick(click) {
+    await this._upsert('clicks', click.id, click);
   },
-  getClicksForLink(linkId)     { return this.getClicks().filter(c => c.linkId === linkId); },
-  getClicksForAffiliate(affId) { return this.getClicks().filter(c => c.affId === affId); },
+  async getClicksForLink(linkId)     { const all = await this.getClicks(); return all.filter(c => c.linkId === linkId); },
+  async getClicksForAffiliate(affId) { const all = await this.getClicks(); return all.filter(c => c.affId === affId); },
 
   // ── Withdrawals ──
-  getWithdrawals()      { return this._get(this.WITHDRAWALS) || []; },
-  addWithdrawal(w) {
-    const all = this.getWithdrawals();
-    all.unshift(w);
-    this._set(this.WITHDRAWALS, all);
+  async getWithdrawals()     { return await this._getAll('withdrawals'); },
+  async addWithdrawal(w)     { await this._upsert('withdrawals', w.id, w); },
+  async updateWithdrawal(id, changes) {
+    const all = await this.getWithdrawals();
+    const w   = all.find(x => x.id === id);
+    if (w) await this._upsert('withdrawals', id, { ...w, ...changes });
   },
-  updateWithdrawal(id, changes) {
-    const all = this.getWithdrawals();
-    const idx = all.findIndex(w => w.id === id);
-    if (idx !== -1) { all[idx] = { ...all[idx], ...changes }; this._set(this.WITHDRAWALS, all); }
-  },
-  getWithdrawalsForAffiliate(affId) {
-    return this.getWithdrawals().filter(w => w.affId === affId);
+  async getWithdrawalsForAffiliate(affId) {
+    const all = await this.getWithdrawals();
+    return all.filter(w => w.affId === affId);
   },
 
   // ── Earnings ──
-  getEarnings()         { return this._get(this.EARNINGS) || []; },
-  addEarning(e) {
-    const all = this.getEarnings();
-    all.unshift(e);
-    this._set(this.EARNINGS, all);
-  },
-  getEarningsForAffiliate(affId) {
-    return this.getEarnings().filter(e => e.affId === affId);
-  },
-
-  // ── Export toutes les données en JSON ──
-  exportAll() {
-    const data = {
-      affiliates:  this.getAffiliates(),
-      links:       this.getLinks(),
-      clicks:      this.getClicks(),
-      withdrawals: this.getWithdrawals(),
-      earnings:    this.getEarnings(),
-      config:      { adminPassword: this.getAdminPassword() },
-      exportedAt:  new Date().toISOString(),
-    };
-    const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
-    const url  = URL.createObjectURL(blob);
-    const a    = document.createElement('a');
-    a.href     = url;
-    a.download = 'crush-affi-backup-' + new Date().toISOString().slice(0,10) + '.json';
-    a.click();
-    URL.revokeObjectURL(url);
-  },
-
-  // ── Import depuis un fichier JSON ──
-  importAll(file) {
-    return new Promise((resolve, reject) => {
-      const reader = new FileReader();
-      reader.onload = (e) => {
-        try {
-          const data = JSON.parse(e.target.result);
-          if (data.affiliates)  this._set(this.AFFILIATES,  data.affiliates);
-          if (data.links)       this._set(this.LINKS,       data.links);
-          if (data.clicks)      this._set(this.CLICKS,      data.clicks);
-          if (data.withdrawals) this._set(this.WITHDRAWALS, data.withdrawals);
-          if (data.earnings)    this._set(this.EARNINGS,    data.earnings);
-          if (data.config?.adminPassword) this._set(this.ADMIN_PASS, data.config.adminPassword);
-          resolve();
-        } catch { reject(new Error('Fichier invalide')); }
-      };
-      reader.readAsText(file);
-    });
+  async getEarnings()        { return await this._getAll('earnings'); },
+  async addEarning(e)        { await this._upsert('earnings', e.id, e); },
+  async getEarningsForAffiliate(affId) {
+    const all = await this.getEarnings();
+    return all.filter(e => e.affId === affId);
   },
 
   // ── Utilitaires ──
@@ -131,7 +154,6 @@ const DB = {
     return 'PC';
   },
   computeEarned(clicks, rate) {
-    // Calcul continu : chaque clic compte proportionnellement
     return (clicks / 1000) * (rate || this.DEFAULT_RATE);
   },
   formatDate(ts) {

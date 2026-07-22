@@ -13,20 +13,20 @@
   <script>
     checkAdminAuth();
 
-    function render() {
-      const affs = DB.getAffiliates();
+    async function render() {
+      const [affs, links] = await Promise.all([DB.getAffiliates(), DB.getLinks()]);
       const entries = Object.entries(affs);
-      const links = DB.getLinks();
 
       const rowsHTML = entries.length === 0
-        ? `<tr><td colspan="5" class="td-empty">Aucun affilié pour le moment — <a href="create.html">Créer le premier</a></td></tr>`
+        ? `<tr><td colspan="5" class="td-empty">Aucun affilié — <a href="create.html">Créer le premier</a></td></tr>`
         : entries.map(([id, a]) => {
             const hasLink = Object.values(links).some(l => l.affId === id);
+            const balance = ((a.clicks||0)/1000*(a.rate||5));
             return `<tr style="cursor:pointer" onclick="location.href='affiliate-detail.html?id=${id}'">
               <td><strong>${a.name}</strong></td>
               <td style="color:var(--text-muted)">${a.email}</td>
               <td>${(a.clicks||0).toLocaleString('fr-FR')}</td>
-              <td><span class="balance-pill">${(a.balance||0).toFixed(2)} €</span></td>
+              <td><span class="balance-pill">${((a.clicks||0)/1000*5).toFixed(2)} €</span></td>
               <td>${hasLink ? '<span style="color:var(--green);font-size:.78rem;font-weight:600">Lien actif</span>' : '<span style="color:var(--text-light);font-size:.78rem">Pas de lien</span>'}</td>
             </tr>`;
           }).join('');
@@ -40,7 +40,7 @@
         <div class="card">
           <div class="tbl-wrap">
             <table>
-              <thead><tr><th>Nom</th><th>Email</th><th>Clics</th><th>Solde</th><th>Lien</th></tr></thead>
+              <thead><tr><th>Nom</th><th>Email</th><th>Clics</th><th>Revenus</th><th>Lien</th></tr></thead>
               <tbody>${rowsHTML}</tbody>
             </table>
           </div>

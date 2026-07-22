@@ -13,25 +13,23 @@
   <script>
     checkAdminAuth();
 
-    function createAffiliate() {
+    async function createAffiliate() {
       const name  = document.getElementById('f-name').value.trim();
       const email = document.getElementById('f-email').value.trim();
+      document.querySelectorAll('.field-err').forEach(e => e.remove());
+      if (!name)  { addErr('f-name','Requis');  return; }
+      if (!email) { addErr('f-email','Requis'); return; }
 
-      document.querySelectorAll('.field-err').forEach(e=>e.remove());
-      let err = false;
-      if (!name)  { addErr('f-name','Requis');  err=true; }
-      if (!email) { addErr('f-email','Requis'); err=true; }
-      if (err) return;
+      const btn = document.querySelector('.btn-primary');
+      btn.disabled = true;
+      btn.textContent = 'Création...';
 
-      // Vérifie email unique
-      const existing = Object.values(DB.getAffiliates()).find(a => a.email === email);
-      if (existing) { addErr('f-email','Cet email est déjà utilisé'); return; }
+      const affs = await DB.getAffiliates();
+      const existing = Object.values(affs).find(a => a.email === email);
+      if (existing) { addErr('f-email','Cet email est déjà utilisé'); btn.disabled=false; btn.textContent='Créer l\'affilié'; return; }
 
       const id = DB.generateId();
-      DB.saveAffiliate(id, { id, name, email, password: '',
-        clicks:0, earned:0, balance:0, createdAt: Date.now() });
-
-      // Redirige vers la fiche de l'affilié
+      await DB.saveAffiliate(id, { id, name, email, clicks:0, earned:0, balance:0, createdAt: Date.now() });
       location.href = 'affiliate-detail.html?id=' + id;
     }
 

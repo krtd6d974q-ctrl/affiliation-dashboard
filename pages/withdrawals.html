@@ -13,21 +13,23 @@
   <script>
     checkAdminAuth();
 
-    function process(id, status) {
-      DB.updateWithdrawal(id, { status, processedAt: Date.now() });
+    async function process(id, status) {
+      await DB.updateWithdrawal(id, { status, processedAt: Date.now() });
       if (status === 'rejected') {
-        const w = DB.getWithdrawals().find(x => x.id === id);
+        const all = await DB.getWithdrawals();
+        const w = all.find(x => x.id === id);
         if (w) {
-          const a = DB.getAffiliate(w.affId);
-          if (a) { a.balance = (a.balance||0) + w.amount; DB.saveAffiliate(w.affId, a); }
+          const a = await DB.getAffiliate(w.affId);
+          if (a) { a.balance = (a.balance||0) + w.amount; await DB.saveAffiliate(w.affId, a); }
         }
       }
+      DB.invalidate('withdrawals');
+      DB.invalidate('affiliates');
       render();
     }
 
-    function render() {
-      const withdrawals = DB.getWithdrawals();
-      const affs = DB.getAffiliates();
+    async function render() {
+      const [withdrawals, affs] = await Promise.all([DB.getWithdrawals(), DB.getAffiliates()]);
       const pending = withdrawals.filter(w => w.status === 'pending');
       const methodLabel = { paypal:'PayPal', virement:'Virement', crypto:'Crypto' };
 
@@ -46,18 +48,16 @@
               <td>${methodLabel[w.method]||w.method}</td>
               <td style="font-size:.78rem;color:var(--text-muted);max-width:180px;word-break:break-all">${details}</td>
               <td><span class="badge-status ${cls}">${label}</span></td>
-              <td>
-                ${w.status==='pending'
-                  ? `<button class="btn btn-green btn-sm" onclick="process('${w.id}','done')">Valider</button>
-                     <button class="btn btn-red btn-sm" onclick="process('${w.id}','rejected')" style="margin-left:6px">Refuser</button>`
-                  : '—'}
-              </td>
+              <td>${w.status==='pending'
+                ? `<button class="btn btn-green btn-sm" onclick="process('${w.id}','done')">Valider</button>
+                   <button class="btn btn-red btn-sm" onclick="process('${w.id}','rejected')" style="margin-left:6px">Refuser</button>`
+                : '—'}</td>
             </tr>`;
           }).join('');
 
       renderShell('withdrawals', `
         <p class="page-title">Demandes de retrait</p>
-        <p class="page-desc">${pending.length} demande(s) en attente de traitement</p>
+        <p class="page-desc">${pending.length} demande(s) en attente</p>
         ${pending.length > 0 ? `<div class="alert-box">${pending.length} demande(s) nécessitent votre attention</div>` : ''}
         <div class="card">
           <div class="tbl-wrap">
@@ -69,7 +69,10 @@
         </div>`);
     }
 
-    window.addEventListener('DOMContentLoaded', () => { render(); setInterval(render, 5000); });
+    window.addEventListener('DOMContentLoaded', () => {
+      render();
+      setInterval(() => { DB.invalidate(); render(); }, 8000);
+    });
   </script>
 </body>
 </html>

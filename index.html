@@ -4,10 +4,12 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Crush Affi</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="css/style.css" />
   <script src="js/data.js"></script>
   <script src="js/admin-nav.js"></script>
   <script>
-    // Si déjà connecté en tant qu'admin → dashboard admin direct
     window.addEventListener('DOMContentLoaded', () => {
       if (
         localStorage.getItem(ADMIN_SESSION) === '1' ||
@@ -15,31 +17,29 @@
       ) {
         showAdminDashboard();
       } else {
-        // Sinon → page de login unifiée
         location.replace('pages/affiliate.html');
       }
     });
 
-    function showAdminDashboard() {
-      const clicks = DB.getClicks();
-      const affs   = DB.getAffiliates();
-      const links  = DB.getLinks();
-      const total  = Object.values(affs).reduce((s, a) => s + (a.earned || 0), 0);
-
-      const platforms = { iOS: 0, Android: 0, PC: 0 };
-      clicks.forEach(c => { if (platforms[c.platform] !== undefined) platforms[c.platform]++; });
-      const colors = { iOS: '#6366f1', Android: '#10b981', PC: '#f59e0b' };
+    async function showAdminDashboard() {
+      const [clicks, affs, links] = await Promise.all([
+        DB.getClicks(), DB.getAffiliates(), DB.getLinks()
+      ]);
+      const total = Object.values(affs).reduce((s,a) => s + ((a.clicks||0)/1000*5), 0);
+      const platforms = {iOS:0, Android:0, PC:0};
+      clicks.forEach(c => { if(platforms[c.platform]!==undefined) platforms[c.platform]++; });
+      const colors = {iOS:'#6366f1', Android:'#10b981', PC:'#f59e0b'};
 
       const barsHTML = clicks.length === 0
         ? '<p style="color:var(--text-muted);font-size:.83rem">Aucun clic enregistré</p>'
-        : Object.entries(platforms).map(([n, c]) => {
-            const pct = Math.round((c / clicks.length) * 100);
+        : Object.entries(platforms).map(([n,c]) => {
+            const pct = Math.round((c/clicks.length)*100);
             return `<div class="platform-row"><span class="platform-name">${n}</span><div class="bar-track"><div class="bar-fill" style="width:${pct}%;background:${colors[n]}"></div></div><span class="platform-pct">${c} — ${pct}%</span></div>`;
           }).join('');
 
-      const recentHTML = clicks.slice(0, 8).map(c => {
-        const a = DB.getAffiliate(c.affId);
-        return `<div class="activity-item"><span class="plat-tag plat-${c.platform.toLowerCase()}">${c.platform}</span><span>${a ? a.name : '—'}</span><span class="activity-time">${DB.formatDate(c.ts)}</span></div>`;
+      const recentHTML = clicks.slice(0,8).map(c => {
+        const a = affs[c.affId];
+        return `<div class="activity-item"><span class="plat-tag plat-${c.platform.toLowerCase()}">${c.platform}</span><span>${a?a.name:'—'}</span><span class="activity-time">${DB.formatDate(c.ts)}</span></div>`;
       }).join('') || '<p style="color:var(--text-muted);font-size:.83rem;padding:12px 0">Aucune activité</p>';
 
       renderShell('overview', `
@@ -60,12 +60,9 @@
           <div class="card-body">${recentHTML}</div>
         </div>`);
 
-      setTimeout(showAdminDashboard, 6000);
+      setTimeout(() => { DB.invalidate(); showAdminDashboard(); }, 8000);
     }
   </script>
-  <link rel="preconnect" href="https://fonts.googleapis.com" />
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet" />
-  <link rel="stylesheet" href="css/style.css" />
 </head>
 <body></body>
 </html>
