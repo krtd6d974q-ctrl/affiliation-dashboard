@@ -29,6 +29,15 @@ function closeMenu() {
   document.getElementById('overlay').classList.remove('show');
 }
 
+function adminImport(input) {
+  const file = input.files[0];
+  if (!file) return;
+  DB.importAll(file).then(() => {
+    alert('Données restaurées !');
+    location.reload();
+  }).catch(() => alert('Fichier invalide'));
+}
+
 function pendingCount() {
   return DB.getWithdrawals().filter(w => w.status === 'pending').length;
 }
