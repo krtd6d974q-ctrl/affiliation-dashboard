@@ -1,10 +1,15 @@
 // ============================================================
-// api/[key].js — Route dynamique Vercel KV
+// api/[key].js — Route dynamique Vercel + Upstash Redis
 // GET  /api/:key  → lit la valeur
 // POST /api/:key  → écrit la valeur
 // ============================================================
 
-import { kv } from '@vercel/kv';
+import { Redis } from '@upstash/redis';
+
+const redis = new Redis({
+  url:   process.env.UPSTASH_REDIS_REST_URL,
+  token: process.env.UPSTASH_REDIS_REST_TOKEN,
+});
 
 const ALLOWED_KEYS = ['affiliates', 'links', 'clicks', 'withdrawals', 'earnings', 'config'];
 
@@ -18,7 +23,6 @@ const DEFAULTS = {
 };
 
 export default async function handler(req, res) {
-  // CORS — autorise le front à appeler l'API
   res.setHeader('Access-Control-Allow-Origin', '*');
   res.setHeader('Access-Control-Allow-Methods', 'GET, POST, OPTIONS');
   res.setHeader('Access-Control-Allow-Headers', 'Content-Type');
@@ -32,14 +36,14 @@ export default async function handler(req, res) {
   }
 
   if (req.method === 'GET') {
-    const data = await kv.get(key);
-    return res.json(data !== null ? data : DEFAULTS[key]);
+    const data = await redis.get(key);
+    return res.json(data !== null && data !== undefined ? data : DEFAULTS[key]);
   }
 
   if (req.method === 'POST') {
-    await kv.set(key, req.body);
+    await redis.set(key, req.body);
     return res.json({ ok: true });
   }
 
-  res.status(405).json({ error: 'Method not allowed' });
+  return res.status(405).json({ error: 'Method not allowed' });
 }
