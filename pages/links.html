@@ -2,7 +2,7 @@
 <html lang="fr">
 <head>
   <meta charset="UTF-8" /><meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Liens — AffiliTrack</title>
+  <title>Liens — Crushet</title>
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
   <link rel="stylesheet" href="../css/style.css" />
@@ -35,7 +35,7 @@
         : entries.map(([id, l]) => {
             const a = affs[l.affId];
             return `<tr>
-              <td><a href="affiliate-detail.html?id=${l.affId}" style="color:var(--accent);text-decoration:none;font-weight:600">${a?a.name:'Inconnu'}</a></td>
+              <td><a href="affiliate-detail.html?id=${l.affId}" style="color:var(--accent-dark);text-decoration:none;font-weight:600">${a?a.name:'Inconnu'}</a></td>
               <td><a href="${l.target}" target="_blank" class="link-ext">${l.target.length>32?l.target.substring(0,32)+'…':l.target}</a></td>
               <td>${(l.clicks||0).toLocaleString('fr-FR')}</td>
               <td>${DB.computeEarned(l.clicks||0,l.rate).toFixed(2)} €</td>

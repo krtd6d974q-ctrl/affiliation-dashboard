@@ -2,7 +2,7 @@
 <html lang="fr">
 <head>
   <meta charset="UTF-8" /><meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Mon espace — AffiliTrack</title>
+  <title>Mon espace — Crushet</title>
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
   <link rel="stylesheet" href="../css/style.css" />
@@ -10,11 +10,11 @@
 <body>
   <div id="login-screen" class="auth-screen">
     <div class="auth-card">
-      <div class="auth-brand">AffiliTrack</div>
+      <div class="auth-brand">Crushet</div>
       <h1>Mon espace</h1>
-      <p class="auth-subtitle">Connectez-vous pour voir vos statistiques</p>
+      <p class="auth-subtitle">Connecte-toi pour voir tes statistiques</p>
       <div class="field"><label>Email</label>
-        <input type="email" id="f-email" placeholder="votre@email.com" onkeydown="if(event.key==='Enter')login()" />
+        <input type="email" id="f-email" placeholder="ton@email.com" onkeydown="if(event.key==='Enter')login()" />
       </div>
       <button class="btn-block" onclick="login()">Se connecter</button>
       <p id="err" class="auth-error hidden">Aucun compte trouvé avec cet email</p>
@@ -73,7 +73,7 @@
         <div class="overlay" id="overlay" onclick="closeMenu()"></div>
         <div class="app">
           <aside class="sidebar" id="sidebar">
-            <div class="sidebar-brand">AffiliTrack <small>Espace affilié</small></div>
+            <div class="sidebar-brand">Crushet <small>Espace affilié</small></div>
             <div class="sidebar-user">
               <div class="sidebar-user-name">${a.name}</div>
               <div class="sidebar-user-email">${a.email}</div>
@@ -166,14 +166,14 @@
 
         ${trackUrl ? `
         <div class="card">
-          <div class="card-head"><span class="card-title">Mon lien de tracking</span></div>
+          <div class="card-head"><span class="card-title">Ton lien de tracking</span></div>
           <div class="card-body">
             <div class="copy-row">
               <input id="my-link" value="${trackUrl}" readonly />
               <button class="btn btn-secondary btn-sm" onclick="copyMyLink()">Copier</button>
             </div>
           </div>
-        </div>` : '<div class="card"><div class="card-body" style="color:var(--text-muted);font-size:.85rem">Aucun lien actif — demandez à votre admin de vous en générer un.</div></div>'}
+        </div>` : '<div class="card"><div class="card-body" style="color:var(--text-muted);font-size:.85rem">Aucun lien actif — demande à ton admin de t\'en générer un.</div></div>'}
 
         <div class="card">
           <div class="card-head"><span class="card-title">Progression vers le prochain gain</span></div>
@@ -233,7 +233,7 @@
             <div style="display:flex;flex-direction:column;gap:0">
               <div style="display:flex;justify-content:space-between;padding:12px 0;border-bottom:1px solid var(--border);font-size:.9rem"><span style="color:var(--text-muted)">Revenus totaux générés</span><strong>${earned.toFixed(2)} €</strong></div>
               <div style="display:flex;justify-content:space-between;padding:12px 0;border-bottom:1px solid var(--border);font-size:.9rem"><span style="color:var(--text-muted)">Déjà retiré</span><strong>${withdrawn.toFixed(2)} €</strong></div>
-              <div style="display:flex;justify-content:space-between;padding:12px 0;font-size:1rem"><span style="color:var(--accent);font-weight:600">Solde disponible</span><strong style="color:var(--accent)">${balance.toFixed(2)} €</strong></div>
+              <div style="display:flex;justify-content:space-between;padding:12px 0;font-size:1rem"><span style="color:var(--accent-dark);font-weight:600">Solde disponible</span><strong style="color:var(--accent-dark)">${balance.toFixed(2)} €</strong></div>
             </div>
           </div>
         </div>
@@ -266,8 +266,8 @@
           </div>
         </div>
         <div id="withdraw-ok" style="display:none" class="success-box">
-          <h3>Demande envoyée</h3>
-          <p>L'admin a été notifié et traitera votre retrait rapidement.</p>
+          <h3>Demande envoyée ✓</h3>
+          <p>L'admin a été notifié et traitera ton retrait rapidement.</p>
           <button class="btn btn-secondary" style="margin-top:12px" onclick="showPage('stats')">Retour aux stats</button>
         </div>`);
     }
@@ -311,7 +311,7 @@
       const p = a.paymentInfo||{};
       setContent(`
         <p class="page-title">Informations de paiement</p>
-        <p class="page-desc">Configurez vos coordonnées pour les retraits</p>
+        <p class="page-desc">Configure tes coordonnées pour les retraits</p>
         <div class="form-card">
           <div class="form-section">PayPal</div>
           <div class="form-row"><label>Adresse PayPal</label><input id="p-paypal" type="email" placeholder="vous@paypal.com" value="${p.paypal||''}" /></div>

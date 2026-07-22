@@ -2,7 +2,7 @@
 <html lang="fr">
 <head>
   <meta charset="UTF-8" /><meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Retraits — AffiliTrack</title>
+  <title>Retraits — Crushet</title>
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
   <link rel="stylesheet" href="../css/style.css" />
@@ -41,7 +41,7 @@
             else if (w.method==='crypto') details = `${w.wallet||'—'} (${w.network||'—'})`;
             const [cls,label] = {pending:['badge-pending','En attente'],done:['badge-done','Traité'],rejected:['badge-rejected','Refusé']}[w.status]||['',''];
             return `<tr>
-              <td><a href="affiliate-detail.html?id=${w.affId}" style="color:var(--accent);text-decoration:none;font-weight:600">${a?a.name:'—'}</a></td>
+              <td><a href="affiliate-detail.html?id=${w.affId}" style="color:var(--accent-dark);text-decoration:none;font-weight:600">${a?a.name:'—'}</a></td>
               <td><strong>${w.amount.toFixed(2)} €</strong></td>
               <td>${methodLabel[w.method]||w.method}</td>
               <td style="font-size:.78rem;color:var(--text-muted);max-width:180px;word-break:break-all">${details}</td>
