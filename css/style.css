@@ -269,21 +269,30 @@ nav { flex: 1; padding: 8px 10px; }
 }
 
 /* =========================================================
-   MOBILE HEADER — pill flottante
+   MOBILE HEADER — pill flottante + dropdown
    ========================================================= */
-.mob-header {
+
+/* Wrapper qui contient la pill ET le dropdown */
+.mob-nav-wrap {
   display: none;
   position: fixed;
   top: 14px;
   left: 16px;
   right: 16px;
+  z-index: 200;
+  flex-direction: column;
+  gap: 8px;
+}
+
+/* La pill */
+.mob-header {
   height: 52px;
   background: #0a0a0a;
-  border-radius: 99px;           /* pill */
+  border-radius: 99px;
+  display: flex;
   align-items: center;
   justify-content: space-between;
   padding: 0 8px 0 20px;
-  z-index: 200;
   box-shadow: 0 4px 24px rgba(0,0,0,.35);
   border: 1px solid #1e1e1e;
 }
@@ -310,8 +319,7 @@ nav { flex: 1; padding: 8px 10px; }
   transition: background .15s;
   flex-shrink: 0;
 }
-.mob-burger:hover { background: #222; }
-
+.mob-burger:hover { background: #2a2a2a; }
 .mob-burger span {
   display: block;
   width: 16px;
@@ -320,17 +328,78 @@ nav { flex: 1; padding: 8px 10px; }
   border-radius: 2px;
   transition: all .22s cubic-bezier(.4,0,.2,1);
 }
-.mob-burger.open span:nth-child(1) { transform: rotate(45deg) translate(4px,4px); }
+.mob-burger.open span:nth-child(1) { transform: rotate(45deg) translate(4px, 4px); }
 .mob-burger.open span:nth-child(2) { opacity: 0; transform: scaleX(0); }
-.mob-burger.open span:nth-child(3) { transform: rotate(-45deg) translate(4px,-4px); }
+.mob-burger.open span:nth-child(3) { transform: rotate(-45deg) translate(4px, -4px); }
 
+/* Le dropdown — même style arrondi que la pill */
+.mob-menu {
+  background: #0a0a0a;
+  border-radius: 20px;
+  border: 1px solid #1e1e1e;
+  box-shadow: 0 8px 32px rgba(0,0,0,.4);
+  padding: 10px 8px;
+  display: none;
+  flex-direction: column;
+  gap: 2px;
+  /* Animation */
+  transform-origin: top center;
+  animation: menuIn .2s cubic-bezier(.4,0,.2,1);
+}
+.mob-menu.open { display: flex; }
+
+@keyframes menuIn {
+  from { opacity: 0; transform: scaleY(.92) translateY(-6px); }
+  to   { opacity: 1; transform: scaleY(1)   translateY(0); }
+}
+
+.mob-menu-link {
+  display: block;
+  padding: 12px 16px;
+  border-radius: 13px;
+  color: #888;
+  text-decoration: none;
+  font-size: .92rem;
+  font-weight: 600;
+  transition: background .1s, color .1s;
+}
+.mob-menu-link:hover { background: #1a1a1a; color: #ddd; }
+.mob-menu-link.active {
+  background: var(--accent);
+  color: #000;
+  font-weight: 700;
+}
+
+.mob-menu-sep {
+  height: 1px;
+  background: #1a1a1a;
+  margin: 6px 8px;
+}
+
+.mob-menu-logout {
+  display: block;
+  width: 100%;
+  padding: 12px 16px;
+  border-radius: 13px;
+  background: none;
+  border: none;
+  color: #555;
+  font-size: .88rem;
+  font-weight: 600;
+  cursor: pointer;
+  text-align: left;
+  font-family: inherit;
+  transition: background .1s, color .1s;
+}
+.mob-menu-logout:hover { background: rgba(220,38,38,.1); color: var(--red); }
+
+/* Overlay léger pour fermer en cliquant à côté */
 .overlay {
   display: none;
   position: fixed;
   inset: 0;
-  background: rgba(0,0,0,.55);
-  z-index: 90;
-  backdrop-filter: blur(2px);
+  background: transparent;
+  z-index: 190;
 }
 .overlay.show { display: block; }
 
