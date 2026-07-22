@@ -73,20 +73,41 @@
             return `<div class="platform-row"><span class="platform-name">${n}</span><div class="bar-track"><div class="bar-fill" style="width:${pct}%;background:${colors[n]}"></div></div><span class="platform-pct">${c} — ${pct}%</span></div>`;
           }).join('');
 
-      const linkSection = myLink ? `
-        <div class="success-box" style="margin-bottom:18px">
-          <h3>Lien actif</h3>
-          <p>Lien de tracking :</p>
-          <div class="copy-row" style="margin-bottom:10px">
-            <input id="out-track" value="${getTrackUrl(myLink[0])}" readonly />
-            <button class="btn btn-secondary btn-sm" data-for="out-track" onclick="copy('out-track')">Copier</button>
+      const linkSection = `
+        <div class="card" style="margin-bottom:18px">
+          <div class="card-head"><span class="card-title">Liens de cet affilié</span></div>
+          <div class="card-body" style="display:flex;flex-direction:column;gap:16px">
+
+            <div>
+              <div style="font-size:.75rem;font-weight:700;color:var(--text-muted);text-transform:uppercase;letter-spacing:.06em;margin-bottom:8px">
+                Lien de connexion — à envoyer à l'affilié
+              </div>
+              <div class="copy-row">
+                <input id="out-aff" value="${getAffUrl()}" readonly />
+                <button class="btn btn-primary btn-sm" data-for="out-aff" onclick="copy('out-aff')">Copier</button>
+              </div>
+              <p style="font-size:.76rem;color:var(--text-muted);margin-top:6px">L'affilié clique sur ce lien pour accéder à son dashboard et voir ses stats.</p>
+            </div>
+
+            ${myLink ? `
+            <div style="border-top:1px solid var(--border);padding-top:16px">
+              <div style="font-size:.75rem;font-weight:700;color:var(--text-muted);text-transform:uppercase;letter-spacing:.06em;margin-bottom:8px">
+                Lien de tracking — à partager sur les réseaux
+              </div>
+              <div class="copy-row">
+                <input id="out-track" value="${getTrackUrl(myLink[0])}" readonly />
+                <button class="btn btn-primary btn-sm" data-for="out-track" onclick="copy('out-track')">Copier</button>
+              </div>
+              <p style="font-size:.76rem;color:var(--text-muted);margin-top:6px">Chaque clic sur ce lien est tracké et comptabilisé dans ses revenus.</p>
+            </div>
+            ` : `
+            <div style="border-top:1px solid var(--border);padding-top:16px;color:var(--text-muted);font-size:.84rem">
+              Pas encore de lien de tracking — génère-en un ci-dessous.
+            </div>
+            `}
+
           </div>
-          <p>Dashboard affilié :</p>
-          <div class="copy-row">
-            <input id="out-aff" value="${getAffUrl()}" readonly />
-            <button class="btn btn-secondary btn-sm" data-for="out-aff" onclick="copy('out-aff')">Copier</button>
-          </div>
-        </div>` : '';
+        </div>`;
 
       const genForm = `
         <div class="card">
