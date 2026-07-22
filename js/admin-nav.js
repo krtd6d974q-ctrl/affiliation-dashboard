@@ -83,6 +83,13 @@ function renderShell(activePage, contentHTML) {
         <div class="sidebar-brand">Crush Affi <small>Admin</small></div>
         <nav>${navHTML}</nav>
         <div class="sidebar-footer">
+          <button class="btn-logout" onclick="DB.exportAll()" style="margin-bottom:6px;color:#555;border-color:#222">
+            ↓ Sauvegarder les données
+          </button>
+          <label class="btn-logout" style="cursor:pointer;margin-bottom:6px;color:#555;border-color:#222;display:block;text-align:left;padding:10px 14px;font-size:.83rem;font-weight:600">
+            ↑ Restaurer les données
+            <input type="file" accept=".json" style="display:none" onchange="adminImport(this)"/>
+          </label>
           <button class="btn-logout" onclick="adminLogout()">Déconnexion</button>
         </div>
       </aside>
