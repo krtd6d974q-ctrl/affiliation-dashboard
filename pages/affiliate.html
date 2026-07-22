@@ -537,10 +537,10 @@
     const err   = document.getElementById('lf-err');
     const btn   = document.querySelector('.lf-btn');
 
-    // Admin
+    // Admin → redirige vers le dashboard admin (pages séparées)
     if (email === 'timeobusiness@icloud.com') {
       localStorage.setItem(ADMIN_SESSION, '1');
-      location.href = '../index.html';
+      location.href = 'affiliates.html';
       return;
     }
 

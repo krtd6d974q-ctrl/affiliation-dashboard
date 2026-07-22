@@ -4,22 +4,19 @@
 const ADMIN_SESSION = 'admin_logged';
 
 function base() {
-  return location.pathname.includes('/pages/') ? '../' : '';
+  return location.pathname.includes('/pages/') ? '' : 'pages/';
 }
 
 function checkAdminAuth() {
-  if (
-    localStorage.getItem(ADMIN_SESSION) !== '1' &&
-    sessionStorage.getItem(ADMIN_SESSION) !== '1'
-  ) {
-    location.href = base() + 'pages/affiliate.html';
-  }
+  const ok = localStorage.getItem(ADMIN_SESSION) === '1' ||
+             sessionStorage.getItem(ADMIN_SESSION) === '1';
+  if (!ok) location.href = (location.pathname.includes('/pages/') ? '' : 'pages/') + 'affiliate.html';
 }
 
 function adminLogout() {
   localStorage.removeItem(ADMIN_SESSION);
   sessionStorage.removeItem(ADMIN_SESSION);
-  location.href = base() + 'pages/affiliate.html';
+  location.href = 'affiliate.html';
 }
 
 function toggleMenu() {
@@ -33,33 +30,17 @@ function closeMenu() {
   document.getElementById('overlay').classList.remove('show');
 }
 
-function adminImport(input) {
-  const file = input.files[0];
-  if (!file) return;
-  DB.importAll(file).then(() => {
-    alert('Données restaurées !');
-    location.reload();
-  }).catch(() => alert('Fichier invalide'));
-}
-
-function pendingCount() {
-  return DB.getWithdrawals().filter(w => w.status === 'pending').length;
-}
-
-function renderShell(activePage, contentHTML) {
-  const b = base();
-  const pending = pendingCount();
+function renderShell(activePage, contentHTML, pendingBadge) {
+  const pending = pendingBadge || 0;
 
   const links = [
-    { id: 'overview',    label: 'Vue globale',     href: b + 'index.html',             group: 'Suivi' },
-    { id: 'affiliates',  label: 'Affiliés',         href: b + 'pages/affiliates.html',  group: 'Suivi' },
-    { id: 'links',       label: 'Liens',            href: b + 'pages/links.html',       group: 'Suivi' },
-    { id: 'withdrawals', label: 'Retraits',         href: b + 'pages/withdrawals.html', group: 'Suivi',
+    { id: 'affiliates',  label: 'Affiliés',       href: 'affiliates.html',  group: 'Suivi' },
+    { id: 'links',       label: 'Liens',           href: 'links.html',       group: 'Suivi' },
+    { id: 'withdrawals', label: 'Retraits',        href: 'withdrawals.html', group: 'Suivi',
       badge: pending > 0 ? pending : 0 },
-    { id: 'create',      label: 'Nouvel affilié',   href: b + 'pages/create.html',      group: 'Actions' },
+    { id: 'create',      label: 'Nouvel affilié',  href: 'create.html',      group: 'Actions' },
   ];
 
-  // Liens sidebar desktop
   let lastGroup = '';
   const navHTML = links.map(l => {
     let out = '';
@@ -71,7 +52,6 @@ function renderShell(activePage, contentHTML) {
     return out;
   }).join('');
 
-  // Liens menu mobile dropdown
   const mobLinksHTML = links.map(l =>
     `<a href="${l.href}" class="mob-menu-link ${activePage === l.id ? 'active' : ''}">${l.label}${l.badge ? ` <span class="nav-badge">${l.badge}</span>` : ''}</a>`
   ).join('');
@@ -80,9 +60,7 @@ function renderShell(activePage, contentHTML) {
     <div class="mob-nav-wrap" id="mob-nav-wrap">
       <header class="mob-header">
         <span class="mob-brand">Crush Affi</span>
-        <button class="mob-burger" id="burger" onclick="toggleMenu()">
-          <span></span><span></span><span></span>
-        </button>
+        <button class="mob-burger" id="burger" onclick="toggleMenu()"><span></span><span></span><span></span></button>
       </header>
       <div class="mob-menu" id="mob-menu">
         ${mobLinksHTML}
@@ -96,13 +74,6 @@ function renderShell(activePage, contentHTML) {
         <div class="sidebar-brand">Crush Affi <small>Admin</small></div>
         <nav>${navHTML}</nav>
         <div class="sidebar-footer">
-          <button class="btn-logout" onclick="DB.exportAll()" style="margin-bottom:6px;color:#555;border-color:#222">
-            ↓ Sauvegarder les données
-          </button>
-          <label class="btn-logout" style="cursor:pointer;margin-bottom:6px;color:#555;border-color:#222;display:block;text-align:left;padding:10px 14px;font-size:.83rem;font-weight:600">
-            ↑ Restaurer les données
-            <input type="file" accept=".json" style="display:none" onchange="adminImport(this)"/>
-          </label>
           <button class="btn-logout" onclick="adminLogout()">Déconnexion</button>
         </div>
       </aside>
