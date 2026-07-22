@@ -849,13 +849,11 @@ code {
 @media (max-width: 768px) {
   .mob-nav-wrap { display: flex; }
 
-  /* Décale le contenu sous la pill (52px) + gap (14px) + marge (14px) */
-  .app { padding-top: 80px; }
-
   /* La sidebar desktop est cachée en mobile */
   .sidebar { display: none; }
 
-  .main { padding: 20px 16px; }
+  /* pill (52px) + top offset (14px) + gap sous la pill (14px) */
+  .main { padding: 80px 16px 20px; }
   .stats-row { grid-template-columns: 1fr 1fr; }
   .form-card { max-width: 100%; }
 }
@@ -863,6 +861,6 @@ code {
 @media (max-width: 480px) {
   .mob-nav-wrap { left: 12px; right: 12px; }
   .stats-row { grid-template-columns: 1fr; }
-  .main { padding: 16px 12px; }
+  .main { padding: 80px 12px 16px; }
   .card-body { padding: 16px; }
 }
