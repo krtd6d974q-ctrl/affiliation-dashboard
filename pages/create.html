@@ -16,13 +16,11 @@
     function createAffiliate() {
       const name  = document.getElementById('f-name').value.trim();
       const email = document.getElementById('f-email').value.trim();
-      const pass  = document.getElementById('f-pass').value.trim();
 
       document.querySelectorAll('.field-err').forEach(e=>e.remove());
       let err = false;
       if (!name)  { addErr('f-name','Requis');  err=true; }
       if (!email) { addErr('f-email','Requis'); err=true; }
-      if (!pass)  { addErr('f-pass','Requis');  err=true; }
       if (err) return;
 
       // Vérifie email unique
