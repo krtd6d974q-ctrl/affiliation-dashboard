@@ -42,11 +42,12 @@ function startRealtime() {
 }
 
 // ---------- Tabs ----------
-function showTab(name) {
+function showTab(name, el) {
   document.querySelectorAll('.tab').forEach(t => t.classList.add('hidden'));
   document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
   document.getElementById('tab-' + name).classList.remove('hidden');
-  event.target.classList.add('active');
+  if (el) el.classList.add('active');
+  closeMenu();
 }
 
 // ---------- Overview ----------
@@ -290,16 +291,31 @@ function checkNewWithdrawals() {
   lastWithdrawalCount = pending.length;
 }
 
+// ---------- Mobile menu ----------
+function toggleMenu() {
+  const sidebar = document.getElementById('sidebar');
+  const hamburger = document.getElementById('hamburger');
+  const overlay = document.getElementById('overlay');
+  sidebar.classList.toggle('open');
+  hamburger.classList.toggle('open');
+  overlay.classList.toggle('show');
+}
+function closeMenu() {
+  document.getElementById('sidebar').classList.remove('open');
+  document.getElementById('hamburger').classList.remove('open');
+  document.getElementById('overlay').classList.remove('show');
+}
+
 // ---------- Boot ----------
 window.addEventListener('DOMContentLoaded', () => {
   if (sessionStorage.getItem(ADMIN_SESSION) === '1') {
     document.getElementById('login-screen').classList.add('hidden');
     document.getElementById('dashboard').classList.remove('hidden');
+    document.getElementById('mobile-header').classList.remove('hidden');
     initDashboard();
   }
   document.getElementById('admin-password').addEventListener('keydown', e => {
     if (e.key === 'Enter') adminLogin();
   });
-
   setInterval(checkNewWithdrawals, 4000);
 });

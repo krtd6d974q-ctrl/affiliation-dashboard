@@ -3,95 +3,115 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Admin — Dashboard Affiliation</title>
+  <title>Admin — AffiliTrack</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
   <link rel="stylesheet" href="css/style.css" />
 </head>
 <body>
+
   <!-- LOGIN -->
   <div id="login-screen" class="auth-screen">
     <div class="auth-box">
-      <h1>🔐 Admin</h1>
+      <div class="auth-logo">AffiliTrack</div>
+      <h1>Espace Admin</h1>
       <p class="subtitle">Accès réservé à l'administrateur</p>
-      <input type="password" id="admin-password" placeholder="Mot de passe admin" />
-      <button onclick="adminLogin()">Se connecter</button>
+      <input type="password" id="admin-password" placeholder="Mot de passe" />
+      <button onclick="adminLogin()">Connexion</button>
       <p id="login-error" class="error hidden">Mot de passe incorrect</p>
     </div>
   </div>
 
+  <!-- MOBILE HEADER -->
+  <header class="mobile-header hidden" id="mobile-header">
+    <span class="mobile-logo">AffiliTrack</span>
+    <button class="hamburger" id="hamburger" onclick="toggleMenu()">
+      <span></span><span></span><span></span>
+    </button>
+  </header>
+  <div class="overlay" id="overlay" onclick="closeMenu()"></div>
+
   <!-- DASHBOARD -->
-  <div id="dashboard" class="hidden">
-    <aside class="sidebar">
-      <div class="logo">📊 AffiliTrack</div>
+  <div id="dashboard" class="app-layout hidden">
+    <aside class="sidebar" id="sidebar">
+      <div class="sidebar-top">
+        <div class="logo">AffiliTrack <span>Dashboard Admin</span></div>
+      </div>
       <nav>
-        <a href="#" class="nav-item active" onclick="showTab('overview')">Vue globale</a>
-        <a href="#" class="nav-item" onclick="showTab('affiliates')">Affiliés</a>
-        <a href="#" class="nav-item" onclick="showTab('links')">Liens</a>
-        <a href="#" class="nav-item" onclick="showTab('withdrawals')">
+        <span class="nav-section">Principal</span>
+        <button class="nav-item active" onclick="showTab('overview',this)">
+          <svg class="nav-icon" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 10h16M4 14h10"/></svg>
+          Vue globale
+        </button>
+        <button class="nav-item" onclick="showTab('affiliates',this)">
+          <svg class="nav-icon" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a4 4 0 00-5-3.87M9 20H4v-2a4 4 0 015-3.87m6-4.13a4 4 0 11-8 0 4 4 0 018 0z"/></svg>
+          Affiliés
+        </button>
+        <button class="nav-item" onclick="showTab('links',this)">
+          <svg class="nav-icon" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13.828 10.172a4 4 0 00-5.656 0l-4 4a4 4 0 105.656 5.656l1.102-1.101"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14.828 14.828a4 4 0 015.656 0l.172.172A4 4 0 0114.828 20.5"/></svg>
+          Liens
+        </button>
+        <button class="nav-item" onclick="showTab('withdrawals',this)">
+          <svg class="nav-icon" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-2.21 0-4 1.343-4 3s1.79 3 4 3 4 1.343 4 3-1.79 3-4 3m0-18v2m0 16v2"/></svg>
           Retraits
           <span id="withdrawal-badge" class="badge hidden">0</span>
-        </a>
-        <a href="#" class="nav-item" onclick="showTab('create')">Créer un lien</a>
+        </button>
+        <span class="nav-section">Actions</span>
+        <button class="nav-item" onclick="showTab('create',this)">
+          <svg class="nav-icon" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/></svg>
+          Créer un lien
+        </button>
       </nav>
-      <button class="logout-btn" onclick="adminLogout()">Déconnexion</button>
+      <div class="sidebar-bottom">
+        <button class="logout-btn" onclick="adminLogout()">Déconnexion</button>
+      </div>
     </aside>
 
     <main class="content">
+
       <!-- OVERVIEW -->
       <section id="tab-overview" class="tab active">
-        <h2>Vue globale</h2>
+        <div class="page-header">
+          <h2>Vue globale</h2>
+          <p>Suivi en temps réel de toute l'activité</p>
+        </div>
         <div class="stats-grid">
-          <div class="stat-card">
-            <span class="stat-icon">🖱️</span>
-            <div>
-              <p class="stat-label">Clics totaux</p>
-              <p class="stat-value" id="total-clicks">0</p>
-            </div>
+          <div class="stat-card accent">
+            <div class="stat-label">Clics totaux</div>
+            <div class="stat-value" id="total-clicks">0</div>
+          </div>
+          <div class="stat-card green">
+            <div class="stat-label">Revenus distribués</div>
+            <div class="stat-value" id="total-revenue">0 €</div>
           </div>
           <div class="stat-card">
-            <span class="stat-icon">💶</span>
-            <div>
-              <p class="stat-label">Revenus distribués</p>
-              <p class="stat-value" id="total-revenue">0 €</p>
-            </div>
+            <div class="stat-label">Affiliés actifs</div>
+            <div class="stat-value" id="total-affiliates">0</div>
           </div>
           <div class="stat-card">
-            <span class="stat-icon">👥</span>
-            <div>
-              <p class="stat-label">Affiliés actifs</p>
-              <p class="stat-value" id="total-affiliates">0</p>
-            </div>
-          </div>
-          <div class="stat-card">
-            <span class="stat-icon">🔗</span>
-            <div>
-              <p class="stat-label">Liens créés</p>
-              <p class="stat-value" id="total-links">0</p>
-            </div>
+            <div class="stat-label">Liens créés</div>
+            <div class="stat-value" id="total-links">0</div>
           </div>
         </div>
-
-        <h3>Répartition plateformes (tous liens)</h3>
-        <div class="platform-bars" id="global-platforms"></div>
-
-        <h3>Activité récente</h3>
-        <div id="recent-activity" class="activity-list"></div>
+        <div class="section-card">
+          <div class="section-title">Répartition plateformes</div>
+          <div id="global-platforms"></div>
+        </div>
+        <div class="section-card">
+          <div class="section-title">Activité récente</div>
+          <div id="recent-activity" class="activity-list"></div>
+        </div>
       </section>
 
       <!-- AFFILIATES -->
       <section id="tab-affiliates" class="tab hidden">
-        <h2>Affiliés</h2>
-        <div id="affiliates-list" class="table-wrap">
+        <div class="page-header"><h2>Affiliés</h2></div>
+        <div class="table-wrap">
           <table>
-            <thead>
-              <tr>
-                <th>Nom</th>
-                <th>Email</th>
-                <th>Clics</th>
-                <th>Revenus</th>
-                <th>Solde</th>
-                <th>Action</th>
-              </tr>
-            </thead>
+            <thead><tr>
+              <th>Nom</th><th>Email</th><th>Clics</th>
+              <th>Revenus</th><th>Solde</th><th>Action</th>
+            </tr></thead>
             <tbody id="affiliates-tbody"></tbody>
           </table>
         </div>
@@ -99,20 +119,13 @@
 
       <!-- LINKS -->
       <section id="tab-links" class="tab hidden">
-        <h2>Tous les liens</h2>
+        <div class="page-header"><h2>Tous les liens</h2></div>
         <div class="table-wrap">
           <table>
-            <thead>
-              <tr>
-                <th>Lien ID</th>
-                <th>Affilié</th>
-                <th>URL cible</th>
-                <th>Clics</th>
-                <th>Revenus</th>
-                <th>Créé le</th>
-                <th>Action</th>
-              </tr>
-            </thead>
+            <thead><tr>
+              <th>ID</th><th>Affilié</th><th>URL cible</th>
+              <th>Clics</th><th>Revenus</th><th>Créé le</th><th></th>
+            </tr></thead>
             <tbody id="links-tbody"></tbody>
           </table>
         </div>
@@ -120,21 +133,14 @@
 
       <!-- WITHDRAWALS -->
       <section id="tab-withdrawals" class="tab hidden">
-        <h2>Demandes de retrait</h2>
-        <div id="no-withdrawals" class="empty-state">Aucune demande en attente ✅</div>
+        <div class="page-header"><h2>Demandes de retrait</h2></div>
+        <div id="no-withdrawals" class="empty-state">Aucune demande en attente</div>
         <div class="table-wrap">
-          <table id="withdrawals-table">
-            <thead>
-              <tr>
-                <th>Affilié</th>
-                <th>Montant</th>
-                <th>Méthode</th>
-                <th>Détails</th>
-                <th>Date</th>
-                <th>Statut</th>
-                <th>Action</th>
-              </tr>
-            </thead>
+          <table>
+            <thead><tr>
+              <th>Affilié</th><th>Montant</th><th>Méthode</th>
+              <th>Détails</th><th>Date</th><th>Statut</th><th>Action</th>
+            </tr></thead>
             <tbody id="withdrawals-tbody"></tbody>
           </table>
         </div>
@@ -142,52 +148,42 @@
 
       <!-- CREATE LINK -->
       <section id="tab-create" class="tab hidden">
-        <h2>Créer un lien affilié</h2>
+        <div class="page-header"><h2>Créer un lien affilié</h2></div>
         <div class="form-card">
-          <div class="form-group">
-            <label>Nom de l'affilié</label>
-            <input type="text" id="aff-name" placeholder="Ex: Jean Dupont" />
-          </div>
-          <div class="form-group">
-            <label>Email de l'affilié</label>
-            <input type="email" id="aff-email" placeholder="jean@exemple.com" />
-          </div>
-          <div class="form-group">
-            <label>URL de destination (votre app)</label>
-            <input type="url" id="aff-target" placeholder="https://monapp.com/download" />
-          </div>
-          <div class="form-group">
-            <label>Taux (€ par 1000 clics)</label>
-            <input type="number" id="aff-rate" value="5" min="1" />
-          </div>
-          <div class="form-group">
-            <label>Mot de passe du compte affilié</label>
-            <input type="text" id="aff-password" placeholder="Mot de passe pour se connecter" />
-          </div>
-          <button class="btn-primary" onclick="createLink()">✨ Créer le lien</button>
+          <div class="form-group"><label>Nom de l'affilié</label>
+            <input type="text" id="aff-name" placeholder="Jean Dupont" /></div>
+          <div class="form-group"><label>Email</label>
+            <input type="email" id="aff-email" placeholder="jean@exemple.com" /></div>
+          <div class="form-group"><label>URL de destination</label>
+            <input type="url" id="aff-target" placeholder="https://monapp.com" /></div>
+          <div class="form-group"><label>Taux (€ par 1 000 clics)</label>
+            <input type="number" id="aff-rate" value="5" min="1" /></div>
+          <div class="form-group"><label>Mot de passe du compte affilié</label>
+            <input type="text" id="aff-password" placeholder="Mot de passe" /></div>
+          <button class="btn-primary" onclick="createLink()">Créer le lien</button>
         </div>
-
         <div id="created-link-box" class="created-link hidden">
-          <h3>✅ Lien créé avec succès</h3>
+          <h3>Lien créé avec succès</h3>
           <p>Lien de tracking :</p>
           <div class="link-copy">
             <input type="text" id="generated-link" readonly />
             <button onclick="copyLink()">Copier</button>
           </div>
-          <p>Lien dashboard affilié :</p>
+          <p>Dashboard affilié :</p>
           <div class="link-copy">
             <input type="text" id="affiliate-dashboard-link" readonly />
             <button onclick="copyAffLink()">Copier</button>
           </div>
         </div>
       </section>
+
     </main>
   </div>
 
-  <!-- WITHDRAWAL NOTIFICATION POPUP -->
+  <!-- NOTIF -->
   <div id="notif-popup" class="notif-popup hidden">
     <div class="notif-content">
-      <span class="notif-icon">💸</span>
+      <div class="notif-dot"></div>
       <div id="notif-text"></div>
       <button onclick="closeNotif()">✕</button>
     </div>

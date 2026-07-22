@@ -46,6 +46,7 @@ function affLogout() {
 function showAffiliateDashboard() {
   document.getElementById('aff-login-screen').classList.add('hidden');
   document.getElementById('aff-dashboard').classList.remove('hidden');
+  document.getElementById('mobile-header').classList.remove('hidden');
 
   const aff = DB.getAffiliate(currentAffId);
   document.getElementById('aff-display-name').textContent = aff.name;
@@ -64,16 +65,16 @@ function startAffRealtime() {
 }
 
 // ---------- Tabs ----------
-function affShowTab(name) {
+function affShowTab(name, el) {
   document.querySelectorAll('.tab').forEach(t => t.classList.add('hidden'));
   document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
   document.getElementById('tab-' + name).classList.remove('hidden');
-  if (event && event.target) event.target.classList.add('active');
+  if (el) el.classList.add('active');
+  closeMenu();
 
   if (name === 'aff-earnings') renderAffEarnings();
   if (name === 'aff-withdraw') renderMyWithdrawals();
-  if (name === 'aff-payment') loadPaymentInfo();
-}
+  if (name === 'aff-payment') loadPaymentInfo();}
 
 // ---------- Stats ----------
 function renderAffStats() {
@@ -296,6 +297,21 @@ function copyMyLink() {
   navigator.clipboard.writeText(val).then(() => alert('Lien copié !'));
 }
 
+// ---------- Mobile menu ----------
+function toggleMenu() {
+  const sidebar = document.getElementById('sidebar');
+  const hamburger = document.getElementById('hamburger');
+  const overlay = document.getElementById('overlay');
+  sidebar.classList.toggle('open');
+  hamburger.classList.toggle('open');
+  overlay.classList.toggle('show');
+}
+function closeMenu() {
+  document.getElementById('sidebar').classList.remove('open');
+  document.getElementById('hamburger').classList.remove('open');
+  document.getElementById('overlay').classList.remove('show');
+}
+
 // ---------- Boot ----------
 window.addEventListener('DOMContentLoaded', () => {
   // Pré-remplir l'ID depuis l'URL
@@ -307,6 +323,7 @@ window.addEventListener('DOMContentLoaded', () => {
   if (savedId && DB.getAffiliate(savedId)) {
     currentAffId = savedId;
     showAffiliateDashboard();
+    document.getElementById('mobile-header').classList.remove('hidden');
   }
 
   document.getElementById('aff-login-pass').addEventListener('keydown', e => {
