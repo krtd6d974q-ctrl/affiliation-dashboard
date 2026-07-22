@@ -87,9 +87,12 @@ function startRealtime() {
 
 // ---------- Tabs ----------
 function showTab(name, el) {
-  document.querySelectorAll('.tab').forEach(t => t.classList.add('hidden'));
+  document.querySelectorAll('.tab').forEach(t => {
+    t.style.display = 'none';
+  });
   document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
-  document.getElementById('tab-' + name).classList.remove('hidden');
+  const target = document.getElementById('tab-' + name);
+  if (target) target.style.display = 'block';
   if (el) el.classList.add('active');
   closeMenu();
 }
