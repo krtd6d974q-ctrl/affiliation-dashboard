@@ -1,0 +1,200 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Dashboard Affilié</title>
+  <link rel="stylesheet" href="../css/style.css" />
+</head>
+<body>
+  <!-- LOGIN AFFILIÉ -->
+  <div id="aff-login-screen" class="auth-screen">
+    <div class="auth-box">
+      <h1>🔗 Espace Affilié</h1>
+      <p class="subtitle">Connectez-vous pour voir vos stats</p>
+      <input type="text" id="aff-login-id" placeholder="Votre ID affilié" />
+      <input type="password" id="aff-login-pass" placeholder="Mot de passe" />
+      <button onclick="affLogin()">Se connecter</button>
+      <p id="aff-login-error" class="error hidden">ID ou mot de passe incorrect</p>
+    </div>
+  </div>
+
+  <!-- DASHBOARD AFFILIÉ -->
+  <div id="aff-dashboard" class="hidden">
+    <aside class="sidebar">
+      <div class="logo">🔗 Mon espace</div>
+      <div class="affiliate-info">
+        <p id="aff-display-name" class="aff-name"></p>
+        <p id="aff-display-id" class="aff-id-label"></p>
+      </div>
+      <nav>
+        <a href="#" class="nav-item active" onclick="affShowTab('aff-stats')">📊 Mes stats</a>
+        <a href="#" class="nav-item" onclick="affShowTab('aff-earnings')">💶 Mes revenus</a>
+        <a href="#" class="nav-item" onclick="affShowTab('aff-withdraw')">💸 Retrait</a>
+        <a href="#" class="nav-item" onclick="affShowTab('aff-payment')">⚙️ Paiement</a>
+      </nav>
+      <button class="logout-btn" onclick="affLogout()">Déconnexion</button>
+    </aside>
+
+    <main class="content">
+      <!-- STATS -->
+      <section id="tab-aff-stats" class="tab active">
+        <div class="live-badge">🟢 Temps réel</div>
+        <h2>Mes statistiques</h2>
+        <div class="stats-grid">
+          <div class="stat-card highlight">
+            <span class="stat-icon">🖱️</span>
+            <div>
+              <p class="stat-label">Total clics</p>
+              <p class="stat-value" id="aff-total-clicks">0</p>
+            </div>
+          </div>
+          <div class="stat-card highlight">
+            <span class="stat-icon">💶</span>
+            <div>
+              <p class="stat-label">Revenus totaux</p>
+              <p class="stat-value" id="aff-total-earned">0 €</p>
+            </div>
+          </div>
+          <div class="stat-card highlight">
+            <span class="stat-icon">💰</span>
+            <div>
+              <p class="stat-label">Solde disponible</p>
+              <p class="stat-value" id="aff-balance">0 €</p>
+            </div>
+          </div>
+          <div class="stat-card highlight">
+            <span class="stat-icon">🎯</span>
+            <div>
+              <p class="stat-label">Prochain palier</p>
+              <p class="stat-value" id="aff-next-milestone">1000 clics</p>
+            </div>
+          </div>
+        </div>
+
+        <h3>Mon lien de tracking</h3>
+        <div class="link-copy" style="max-width:600px">
+          <input type="text" id="aff-my-link" readonly />
+          <button onclick="copyMyLink()">Copier</button>
+        </div>
+
+        <h3>Répartition par plateforme</h3>
+        <div class="platform-bars" id="aff-platforms"></div>
+
+        <h3>Progression vers le prochain gain</h3>
+        <div class="progress-container">
+          <div class="progress-bar-wrap">
+            <div class="progress-bar" id="aff-progress-bar"></div>
+          </div>
+          <p id="aff-progress-text">0 / 1000 clics</p>
+        </div>
+
+        <h3>Historique des clics récents</h3>
+        <div id="aff-click-history" class="activity-list"></div>
+      </section>
+
+      <!-- EARNINGS -->
+      <section id="tab-aff-earnings" class="tab hidden">
+        <h2>Mes revenus</h2>
+        <div class="earnings-summary">
+          <div class="earning-row">
+            <span>Revenus totaux générés</span>
+            <strong id="earn-total">0 €</strong>
+          </div>
+          <div class="earning-row">
+            <span>Déjà retiré</span>
+            <strong id="earn-withdrawn">0 €</strong>
+          </div>
+          <div class="earning-row highlight-row">
+            <span>Solde disponible</span>
+            <strong id="earn-balance">0 €</strong>
+          </div>
+        </div>
+        <p class="rate-info">💡 Taux : <strong id="earn-rate">5 €</strong> par 1 000 clics</p>
+
+        <h3>Historique des gains</h3>
+        <div id="earnings-history" class="activity-list"></div>
+
+        <h3>Historique des retraits</h3>
+        <div id="withdrawals-history" class="activity-list"></div>
+      </section>
+
+      <!-- WITHDRAWAL -->
+      <section id="tab-aff-withdraw" class="tab hidden">
+        <h2>Demande de retrait</h2>
+        <div id="withdraw-form-area">
+          <div class="form-card">
+            <p class="balance-display">Solde disponible : <strong id="withdraw-balance">0 €</strong></p>
+            <div class="form-group">
+              <label>Montant à retirer (€)</label>
+              <input type="number" id="withdraw-amount" placeholder="Ex: 25" min="1" step="0.01" />
+            </div>
+            <div class="form-group">
+              <label>Méthode de paiement</label>
+              <select id="withdraw-method" onchange="updateWithdrawMethod()">
+                <option value="">-- Choisir --</option>
+                <option value="paypal">PayPal</option>
+                <option value="virement">Virement bancaire (IBAN)</option>
+                <option value="crypto">Crypto</option>
+              </select>
+            </div>
+            <div id="withdraw-details" class="hidden">
+              <p id="withdraw-method-info" class="method-info"></p>
+            </div>
+            <button class="btn-primary" onclick="requestWithdrawal()">💸 Demander le retrait</button>
+          </div>
+        </div>
+        <div id="withdraw-success" class="success-box hidden">
+          <p>✅ Demande envoyée ! L'admin a été notifié et traitera votre retrait rapidement.</p>
+          <button onclick="affShowTab('aff-stats')">Retour aux stats</button>
+        </div>
+
+        <h3>Mes demandes de retrait</h3>
+        <div id="my-withdrawals" class="activity-list"></div>
+      </section>
+
+      <!-- PAYMENT SETTINGS -->
+      <section id="tab-aff-payment" class="tab hidden">
+        <h2>⚙️ Informations de paiement</h2>
+        <div class="form-card">
+          <h3>PayPal</h3>
+          <div class="form-group">
+            <label>Adresse PayPal</label>
+            <input type="email" id="pay-paypal" placeholder="votre@paypal.com" />
+          </div>
+
+          <h3>Virement bancaire</h3>
+          <div class="form-group">
+            <label>Prénom</label>
+            <input type="text" id="pay-firstname" placeholder="Prénom" />
+          </div>
+          <div class="form-group">
+            <label>Nom</label>
+            <input type="text" id="pay-lastname" placeholder="Nom de famille" />
+          </div>
+          <div class="form-group">
+            <label>IBAN</label>
+            <input type="text" id="pay-iban" placeholder="FR76 XXXX XXXX XXXX XXXX XXXX XXX" />
+          </div>
+
+          <h3>Crypto</h3>
+          <div class="form-group">
+            <label>Adresse de wallet</label>
+            <input type="text" id="pay-crypto" placeholder="0x... ou bc1..." />
+          </div>
+          <div class="form-group">
+            <label>Réseau (BTC, ETH, USDT...)</label>
+            <input type="text" id="pay-crypto-network" placeholder="Ex: Ethereum ERC-20" />
+          </div>
+
+          <button class="btn-primary" onclick="savePaymentInfo()">💾 Enregistrer</button>
+          <p id="payment-saved-msg" class="success-msg hidden">✅ Informations enregistrées !</p>
+        </div>
+      </section>
+    </main>
+  </div>
+
+  <script src="../js/data.js"></script>
+  <script src="../js/affiliate.js"></script>
+</body>
+</html>
