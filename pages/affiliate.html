@@ -41,8 +41,7 @@
 
     function login() {
       const email = document.getElementById('f-email').value.trim();
-      const pass  = document.getElementById('f-pass').value;
-      const found = Object.entries(DB.getAffiliates()).find(([,a]) => a.email===email && a.password===pass);
+      const found = Object.entries(DB.getAffiliates()).find(([,a]) => a.email === email);
       if (!found) { document.getElementById('err').classList.remove('hidden'); return; }
       currentId = found[0];
       sessionStorage.setItem(AFF_KEY, currentId);
