@@ -38,12 +38,12 @@ function renderShell(activePage, contentHTML) {
   const pending = pendingCount();
 
   const links = [
-    { id: 'overview',    label: 'Vue globale',   href: b + 'index.html',             group: 'Suivi' },
-    { id: 'affiliates',  label: 'Affiliés',       href: b + 'pages/affiliates.html',  group: 'Suivi' },
-    { id: 'links',       label: 'Liens',          href: b + 'pages/links.html',       group: 'Suivi' },
-    { id: 'withdrawals', label: 'Retraits',       href: b + 'pages/withdrawals.html', group: 'Suivi',
+    { id: 'overview',    label: '📊  Vue globale',      href: b + 'index.html',             group: 'Suivi' },
+    { id: 'affiliates',  label: '👥  Affiliés',          href: b + 'pages/affiliates.html',  group: 'Suivi' },
+    { id: 'links',       label: '🔗  Liens',             href: b + 'pages/links.html',       group: 'Suivi' },
+    { id: 'withdrawals', label: '💸  Retraits',          href: b + 'pages/withdrawals.html', group: 'Suivi',
       badge: pending > 0 ? pending : 0 },
-    { id: 'create',      label: 'Créer un affilié', href: b + 'pages/create.html',   group: 'Actions' },
+    { id: 'create',      label: '＋  Nouvel affilié',    href: b + 'pages/create.html',      group: 'Actions' },
   ];
 
   let lastGroup = '';

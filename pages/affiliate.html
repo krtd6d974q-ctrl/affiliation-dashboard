@@ -52,10 +52,10 @@
 
     function buildAffNav(activePage) {
       const pages = [
-        { id:'stats',    label:'Mes stats',   href:'#', group:'Suivi' },
-        { id:'earnings', label:'Revenus',      href:'#', group:'Suivi' },
-        { id:'withdraw', label:'Retrait',      href:'#', group:'Action' },
-        { id:'payment',  label:'Paiement',     href:'#', group:'Action' },
+        { id:'stats',    label:'📊  Mes stats',   href:'#', group:'Suivi' },
+        { id:'earnings', label:'💰  Revenus',      href:'#', group:'Suivi' },
+        { id:'withdraw', label:'💸  Retrait',      href:'#', group:'Action' },
+        { id:'payment',  label:'🏦  Paiement',     href:'#', group:'Action' },
       ];
       let lastG = '';
       const nav = pages.map(p => {
@@ -67,7 +67,7 @@
       const a = DB.getAffiliate(currentId);
       return `
         <header class="mob-header" id="mob-header">
-          <span class="mob-brand">Mon espace</span>
+          <span class="mob-brand">Crushet</span>
           <button class="mob-burger" id="burger" onclick="toggleMenu()"><span></span><span></span><span></span></button>
         </header>
         <div class="overlay" id="overlay" onclick="closeMenu()"></div>
