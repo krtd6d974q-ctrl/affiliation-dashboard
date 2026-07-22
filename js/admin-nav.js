@@ -8,13 +8,13 @@ function base() {
 }
 
 function checkAdminAuth() {
-  if (sessionStorage.getItem(ADMIN_SESSION) !== '1') {
+  if (localStorage.getItem(ADMIN_SESSION) !== '1') {
     location.href = base() + 'index.html';
   }
 }
 
 function adminLogout() {
-  sessionStorage.removeItem(ADMIN_SESSION);
+  localStorage.removeItem(ADMIN_SESSION);
   location.href = base() + 'index.html';
 }
 
