@@ -1,14 +1,12 @@
 // ============================================================
-// data.js — Couche de données (API serveur → fichiers JSON)
+// data.js — Couche de données
+// Fonctionne en local (node server.js) ET sur Vercel
 // ============================================================
 
 const DB = {
-  // Cache local pour éviter trop de requêtes
   _cache: {},
 
-  // ── Requête synchrone vers l'API ──
-  // On utilise XMLHttpRequest synchrone pour garder le code
-  // appelant simple (pas de async/await partout dans les pages).
+  // ── Lecture synchrone via XHR (fonctionne local + Vercel) ──
   _get(key) {
     if (this._cache[key] !== undefined) return this._cache[key];
     const xhr = new XMLHttpRequest();
@@ -22,19 +20,16 @@ const DB = {
     return null;
   },
 
+  // ── Écriture asynchrone (fire & forget) ──
   _set(key, value) {
     this._cache[key] = value;
-    // Écriture asynchrone — pas besoin d'attendre la réponse
     fetch('/api/' + key, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(value),
-    }).catch(() => {
-      console.error('[DB] Impossible d\'écrire ' + key);
-    });
+    }).catch(() => console.error('[DB] Erreur écriture ' + key));
   },
 
-  // Vide le cache pour forcer une relecture depuis le serveur
   invalidate(key) {
     if (key) delete this._cache[key];
     else this._cache = {};
@@ -47,9 +42,9 @@ const DB = {
   },
 
   // ── Affiliates ──
-  getAffiliates()       { return this._get('affiliates') || {}; },
-  saveAffiliates(data)  { this._set('affiliates', data); },
-  getAffiliate(id)      { return this.getAffiliates()[id] || null; },
+  getAffiliates()         { return this._get('affiliates') || {}; },
+  saveAffiliates(data)    { this._set('affiliates', data); },
+  getAffiliate(id)        { return this.getAffiliates()[id] || null; },
   saveAffiliate(id, data) {
     const all = this.getAffiliates();
     all[id] = data;
@@ -60,7 +55,7 @@ const DB = {
   getLinks()            { return this._get('links') || {}; },
   saveLinks(data)       { this._set('links', data); },
   getLink(id)           { return this.getLinks()[id] || null; },
-  saveLink(id, data) {
+  saveLink(id, data)    {
     const all = this.getLinks();
     all[id] = data;
     this.saveLinks(all);
@@ -74,8 +69,8 @@ const DB = {
     if (all.length > 5000) all.pop();
     this._set('clicks', all);
   },
-  getClicksForLink(linkId)      { return this.getClicks().filter(c => c.linkId === linkId); },
-  getClicksForAffiliate(affId)  { return this.getClicks().filter(c => c.affId === affId); },
+  getClicksForLink(linkId)     { return this.getClicks().filter(c => c.linkId === linkId); },
+  getClicksForAffiliate(affId) { return this.getClicks().filter(c => c.affId === affId); },
 
   // ── Withdrawals ──
   getWithdrawals()      { return this._get('withdrawals') || []; },
@@ -108,18 +103,15 @@ const DB = {
   generateId() {
     return Math.random().toString(36).substr(2, 9) + Date.now().toString(36);
   },
-
   detectPlatform() {
     const ua = navigator.userAgent;
     if (/iPad|iPhone|iPod/.test(ua) && !window.MSStream) return 'iOS';
     if (/Android/.test(ua)) return 'Android';
     return 'PC';
   },
-
   computeEarned(clicks, rate) {
     return Math.floor(clicks / 1000) * (rate || 5);
   },
-
   formatDate(ts) {
     return new Date(ts).toLocaleString('fr-FR', {
       day: '2-digit', month: '2-digit', year: 'numeric',
