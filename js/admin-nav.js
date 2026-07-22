@@ -3,6 +3,20 @@
 // ============================================================
 const ADMIN_SESSION = 'admin_logged';
 
+// Loader visible immédiatement sur toutes les pages admin
+document.addEventListener('DOMContentLoaded', () => {
+  if (!document.getElementById('admin-loader')) {
+    const l = document.createElement('div');
+    l.id = 'admin-loader';
+    l.style.cssText = 'position:fixed;inset:0;background:#fff;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:14px;z-index:9999;font-family:Inter,system-ui,sans-serif';
+    l.innerHTML = `
+      <div style="font-size:1.1rem;font-weight:900;color:#0a0a0a;letter-spacing:-.5px">Crush Affi</div>
+      <div style="width:28px;height:28px;border:3px solid #e8e8e8;border-top-color:#8afd3a;border-radius:50%;animation:_sp .7s linear infinite"></div>
+      <style>@keyframes _sp{to{transform:rotate(360deg)}}</style>`;
+    document.body.appendChild(l);
+  }
+});
+
 function base() {
   return location.pathname.includes('/pages/') ? '' : 'pages/';
 }
@@ -31,6 +45,8 @@ function closeMenu() {
 }
 
 function renderShell(activePage, contentHTML, pendingBadge) {
+  const l = document.getElementById('admin-loader');
+  if (l) l.remove();
   const pending = pendingBadge || 0;
 
   const links = [
