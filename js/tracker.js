@@ -59,5 +59,5 @@
   }
 
   // Redirection immédiate — rien ne s'affiche
-  window.location.replace(link.target || 'https://google.com');
+  window.location.replace(link.target || 'https://apps.apple.com/us/app/crush-assistant-drague/id6783893349');
 })();
