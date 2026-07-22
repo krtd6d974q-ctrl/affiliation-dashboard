@@ -26,8 +26,8 @@ const DB = {
     });
     if (!res.ok) {
       const err = await res.text();
-      console.error(`[DB] ${method} ${table} failed:`, err);
-      return null;
+      console.error(`[DB] ${method} ${table} ${res.status}:`, err);
+      throw new Error(`Supabase ${res.status}: ${err}`);
     }
     const text = await res.text();
     return text ? JSON.parse(text) : null;
