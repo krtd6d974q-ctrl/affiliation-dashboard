@@ -409,8 +409,8 @@
     </div>
     <div class="login-right">
       <div class="lf-brand">Crush <span>Affi</span></div>
-      <h2 class="lf-title">Ton espace affilié</h2>
-      <p class="lf-sub">Connecte-toi avec ton adresse email</p>
+      <h2 class="lf-title">Connexion</h2>
+      <p class="lf-sub">Entre ton adresse email pour accéder à ton espace</p>
       <label class="lf-label" for="f-email">Adresse email</label>
       <input class="lf-input" type="email" id="f-email" placeholder="ton@email.com" onkeydown="if(event.key==='Enter')login()" />
       <button class="lf-btn" onclick="login()">
@@ -468,6 +468,7 @@
 
 <script src="../js/data.js"></script>
 <script>
+  const ADMIN_SESSION = 'admin_logged';
   const AFF_KEY = 'aff_session';
   let currentId = null;
   let currentPage = 'stats';
@@ -491,10 +492,19 @@
   });
 
   function login() {
-    const email = document.getElementById('f-email').value.trim();
+    const email = document.getElementById('f-email').value.trim().toLowerCase();
     const inp   = document.getElementById('f-email');
     const err   = document.getElementById('lf-err');
-    const found = Object.entries(DB.getAffiliates()).find(([,a]) => a.email === email);
+
+    // Admin
+    if (email === 'timeobusiness@icloud.com') {
+      localStorage.setItem(ADMIN_SESSION, '1');
+      location.href = '../index.html';
+      return;
+    }
+
+    // Affilié
+    const found = Object.entries(DB.getAffiliates()).find(([,a]) => a.email.toLowerCase() === email);
     if (!found) {
       err.classList.remove('hidden');
       inp.classList.add('err');

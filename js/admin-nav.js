@@ -8,14 +8,18 @@ function base() {
 }
 
 function checkAdminAuth() {
-  if (localStorage.getItem(ADMIN_SESSION) !== '1') {
-    location.href = base() + 'index.html';
+  if (
+    localStorage.getItem(ADMIN_SESSION) !== '1' &&
+    sessionStorage.getItem(ADMIN_SESSION) !== '1'
+  ) {
+    location.href = base() + 'pages/affiliate.html';
   }
 }
 
 function adminLogout() {
   localStorage.removeItem(ADMIN_SESSION);
-  location.href = base() + 'index.html';
+  sessionStorage.removeItem(ADMIN_SESSION);
+  location.href = base() + 'pages/affiliate.html';
 }
 
 function toggleMenu() {
