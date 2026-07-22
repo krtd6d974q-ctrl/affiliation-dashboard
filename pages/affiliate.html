@@ -52,10 +52,10 @@
 
     function buildAffNav(activePage) {
       const pages = [
-        { id:'stats',    label:'📊  Mes stats',   href:'#', group:'Suivi' },
-        { id:'earnings', label:'💰  Revenus',      href:'#', group:'Suivi' },
-        { id:'withdraw', label:'💸  Retrait',      href:'#', group:'Action' },
-        { id:'payment',  label:'🏦  Paiement',     href:'#', group:'Action' },
+        { id:'stats',    label:'Mes stats',   href:'#', group:'Suivi' },
+        { id:'earnings', label:'Revenus',      href:'#', group:'Suivi' },
+        { id:'withdraw', label:'Retrait',      href:'#', group:'Action' },
+        { id:'payment',  label:'Paiement',     href:'#', group:'Action' },
       ];
       let lastG = '';
       const nav = pages.map(p => {
@@ -64,12 +64,24 @@
         out += `<a href="#" class="nav-link ${activePage===p.id?'active':''}" onclick="showPage('${p.id}');event.preventDefault()">${p.label}</a>`;
         return out;
       }).join('');
+
+      const mobLinksHTML = pages.map(p =>
+        `<a href="#" class="mob-menu-link ${activePage===p.id?'active':''}" onclick="showPage('${p.id}');closeMenu();event.preventDefault()">${p.label}</a>`
+      ).join('');
+
       const a = DB.getAffiliate(currentId);
       return `
-        <header class="mob-header" id="mob-header">
-          <span class="mob-brand">Crushet</span>
-          <button class="mob-burger" id="burger" onclick="toggleMenu()"><span></span><span></span><span></span></button>
-        </header>
+        <div class="mob-nav-wrap" id="mob-nav-wrap">
+          <header class="mob-header">
+            <span class="mob-brand">Crushet</span>
+            <button class="mob-burger" id="burger" onclick="toggleMenu()"><span></span><span></span><span></span></button>
+          </header>
+          <div class="mob-menu" id="mob-menu">
+            ${mobLinksHTML}
+            <div class="mob-menu-sep"></div>
+            <button class="mob-menu-logout" onclick="logout()">Déconnexion</button>
+          </div>
+        </div>
         <div class="overlay" id="overlay" onclick="closeMenu()"></div>
         <div class="app">
           <aside class="sidebar" id="sidebar">
