@@ -14,13 +14,10 @@
       <h1>Mon espace</h1>
       <p class="auth-subtitle">Connectez-vous pour voir vos statistiques</p>
       <div class="field"><label>Email</label>
-        <input type="email" id="f-email" placeholder="votre@email.com" />
-      </div>
-      <div class="field"><label>Mot de passe</label>
-        <input type="password" id="f-pass" placeholder="••••••••" onkeydown="if(event.key==='Enter')login()" />
+        <input type="email" id="f-email" placeholder="votre@email.com" onkeydown="if(event.key==='Enter')login()" />
       </div>
       <button class="btn-block" onclick="login()">Se connecter</button>
-      <p id="err" class="auth-error hidden">Email ou mot de passe incorrect</p>
+      <p id="err" class="auth-error hidden">Aucun compte trouvé avec cet email</p>
     </div>
   </div>
 
