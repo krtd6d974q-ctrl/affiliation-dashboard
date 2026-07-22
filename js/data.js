@@ -24,7 +24,7 @@ const DB = {
 
   // --- Admin password ---
   getAdminPassword() {
-    return this.get(this.ADMIN_PASS) || 'admin123';
+    return this.get(this.ADMIN_PASS) || 'Tiimeeo87';
   },
 
   // --- Affiliates ---
