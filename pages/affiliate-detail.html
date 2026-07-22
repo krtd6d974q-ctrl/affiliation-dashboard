@@ -14,8 +14,8 @@
     checkAdminAuth();
     const affId = new URLSearchParams(location.search).get('id');
 
-    function getTrackUrl(linkId) {
-      return location.origin + location.pathname.replace('pages/affiliate-detail.html','') + 'pages/track.html?lid=' + linkId;
+    function getTrackUrl(slug) {
+      return location.origin + '/' + slug;
     }
     function getAffUrl() {
       return location.origin + location.pathname.replace('pages/affiliate-detail.html','') + 'pages/affiliate.html?id=' + affId;
@@ -34,6 +34,12 @@
       const rate   = parseFloat(document.getElementById('link-rate').value) || 5;
       if (!target) { document.getElementById('link-target').focus(); return; }
 
+      // Slug = nom de l'affilié en minuscules, sans espaces ni accents
+      const aff  = DB.getAffiliate(affId);
+      const slug = aff.name.toLowerCase()
+        .normalize('NFD').replace(/[\u0300-\u036f]/g, '') // retire accents
+        .replace(/[^a-z0-9]/g, '');                        // garde lettres/chiffres
+
       // Supprime l'ancien lien de cet affilié s'il en avait un
       const allLinks = DB.getLinks();
       Object.entries(allLinks).forEach(([lid, l]) => {
@@ -42,9 +48,9 @@
       DB.saveLinks(allLinks);
 
       const linkId = DB.generateId();
-      DB.saveLink(linkId, { id:linkId, affId, target, rate, clicks:0, createdAt:Date.now() });
+      DB.saveLink(linkId, { id: linkId, affId, target, rate, slug, clicks: 0, createdAt: Date.now() });
 
-      render(); // re-render pour afficher les liens générés
+      render();
     }
 
     function deleteAffiliate() {
@@ -95,7 +101,7 @@
                 Lien de tracking — à partager sur les réseaux
               </div>
               <div class="copy-row">
-                <input id="out-track" value="${getTrackUrl(myLink[0])}" readonly />
+                <input id="out-track" value="${getTrackUrl(myLink[1].slug || myLink[0])}" readonly />
                 <button class="btn btn-primary btn-sm" data-for="out-track" onclick="copy('out-track')">Copier</button>
               </div>
               <p style="font-size:.76rem;color:var(--text-muted);margin-top:6px">Chaque clic sur ce lien est tracké et comptabilisé dans ses revenus.</p>

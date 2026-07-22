@@ -13,12 +13,12 @@
   <script>
     checkAdminAuth();
 
-    function trackUrl(id) {
-      return location.origin + location.pathname.replace('pages/links.html','') + 'pages/track.html?lid=' + id;
+    function trackUrl(id, slug) {
+      return location.origin + '/' + (slug || id);
     }
 
-    function copyLink(id) {
-      navigator.clipboard.writeText(trackUrl(id)).then(() => {
+    function copyLink(id, slug) {
+      navigator.clipboard.writeText(trackUrl(id, slug)).then(() => {
         const btn = document.getElementById('cpbtn-'+id);
         btn.textContent = 'Copié !';
         setTimeout(() => btn.textContent = 'Copier', 2000);
@@ -34,13 +34,14 @@
         ? `<tr><td colspan="6" class="td-empty">Aucun lien — <a href="create.html">Créer un affilié</a> pour en générer un</td></tr>`
         : entries.map(([id, l]) => {
             const a = affs[l.affId];
+            const slug = l.slug || id;
             return `<tr>
               <td><a href="affiliate-detail.html?id=${l.affId}" style="color:var(--accent-dark);text-decoration:none;font-weight:600">${a?a.name:'Inconnu'}</a></td>
-              <td><a href="${l.target}" target="_blank" class="link-ext">${l.target.length>32?l.target.substring(0,32)+'…':l.target}</a></td>
+              <td><code style="font-size:.78rem">/${slug}</code></td>
               <td>${(l.clicks||0).toLocaleString('fr-FR')}</td>
               <td>${DB.computeEarned(l.clicks||0,l.rate).toFixed(2)} €</td>
               <td>${DB.formatDate(l.createdAt)}</td>
-              <td><button id="cpbtn-${id}" class="btn btn-secondary btn-sm" onclick="copyLink('${id}')">Copier</button></td>
+              <td><button id="cpbtn-${id}" class="btn btn-secondary btn-sm" onclick="copyLink('${id}','${slug}')">Copier</button></td>
             </tr>`;
           }).join('');
 

@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Redirection...</title>
+  <style>body{margin:0;background:#0a0a0a}</style>
+</head>
+<body>
+  <script src="/js/data.js"></script>
+  <script>
+    (function () {
+      const slug = new URLSearchParams(location.search).get('s') || '';
+
+      // Cherche le lien dont le slug correspond
+      const links = DB.getLinks();
+      const entry = Object.entries(links).find(([, l]) => l.slug === slug.toLowerCase());
+
+      if (!entry) {
+        // Slug inconnu → App Store par défaut
+        location.replace('https://apps.apple.com/us/app/crush-assistant-drague/id6783893349');
+        return;
+      }
+
+      const [linkId, link] = entry;
+
+      // Enregistre le clic
+      const click = {
+        id:       DB.generateId(),
+        linkId:   linkId,
+        affId:    link.affId,
+        platform: DB.detectPlatform(),
+        ts:       Date.now(),
+        ua:       navigator.userAgent.substring(0, 100),
+      };
+      DB.addClick(click);
+
+      // Met à jour compteur lien
+      link.clicks = (link.clicks || 0) + 1;
+      DB.saveLink(linkId, link);
+
+      // Met à jour affilié + calcul revenus
+      const aff = DB.getAffiliate(link.affId);
+      if (aff) {
+        aff.clicks = (aff.clicks || 0) + 1;
+        const prevEarned = aff.earned || 0;
+        const newEarned  = DB.computeEarned(aff.clicks, link.rate);
+        if (newEarned > prevEarned) {
+          const gain = newEarned - prevEarned;
+          DB.addEarning({ id: DB.generateId(), affId: link.affId, linkId, amount: gain, clicks: aff.clicks, ts: Date.now() });
+          aff.balance = (aff.balance || 0) + gain;
+        }
+        aff.earned = newEarned;
+        DB.saveAffiliate(link.affId, aff);
+      }
+
+      location.replace(link.target || 'https://apps.apple.com/us/app/crush-assistant-drague/id6783893349');
+    })();
+  </script>
+</body>
+</html>
