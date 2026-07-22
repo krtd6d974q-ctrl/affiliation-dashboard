@@ -131,7 +131,8 @@ const DB = {
     return 'PC';
   },
   computeEarned(clicks, rate) {
-    return Math.floor(clicks / 1000) * (rate || this.DEFAULT_RATE);
+    // Calcul continu : chaque clic compte proportionnellement
+    return (clicks / 1000) * (rate || this.DEFAULT_RATE);
   },
   formatDate(ts) {
     return new Date(ts).toLocaleString('fr-FR', {
