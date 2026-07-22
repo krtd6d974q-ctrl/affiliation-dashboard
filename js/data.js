@@ -1,100 +1,114 @@
 // ============================================================
-// data.js — Couche de données partagée (localStorage)
+// data.js — Couche de données (API serveur → fichiers JSON)
 // ============================================================
 
 const DB = {
-  // --- Clé admin ---
-  ADMIN_PASS: 'admin_password',
-  AFFILIATES: 'affiliates',
-  LINKS: 'links',
-  CLICKS: 'clicks',
-  WITHDRAWALS: 'withdrawals',
-  EARNINGS: 'earnings',
+  // Cache local pour éviter trop de requêtes
+  _cache: {},
 
-  // Taux par défaut : 5€ / 1000 clics
-  DEFAULT_RATE: 5,
-
-  // --- Helpers ---
-  get(key) {
-    try { return JSON.parse(localStorage.getItem(key)) || null; } catch { return null; }
+  // ── Requête synchrone vers l'API ──
+  // On utilise XMLHttpRequest synchrone pour garder le code
+  // appelant simple (pas de async/await partout dans les pages).
+  _get(key) {
+    if (this._cache[key] !== undefined) return this._cache[key];
+    const xhr = new XMLHttpRequest();
+    xhr.open('GET', '/api/' + key, false); // synchrone
+    xhr.send();
+    if (xhr.status === 200) {
+      const data = JSON.parse(xhr.responseText);
+      this._cache[key] = data;
+      return data;
+    }
+    return null;
   },
-  set(key, value) {
-    localStorage.setItem(key, JSON.stringify(value));
+
+  _set(key, value) {
+    this._cache[key] = value;
+    // Écriture asynchrone — pas besoin d'attendre la réponse
+    fetch('/api/' + key, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(value),
+    }).catch(() => {
+      console.error('[DB] Impossible d\'écrire ' + key);
+    });
   },
 
-  // --- Admin password ---
+  // Vide le cache pour forcer une relecture depuis le serveur
+  invalidate(key) {
+    if (key) delete this._cache[key];
+    else this._cache = {};
+  },
+
+  // ── Admin password ──
   getAdminPassword() {
-    return this.get(this.ADMIN_PASS) || 'Tiimeeo87';
+    const cfg = this._get('config');
+    return (cfg && cfg.adminPassword) ? cfg.adminPassword : 'Tiimeeo87';
   },
 
-  // --- Affiliates ---
-  getAffiliates() { return this.get(this.AFFILIATES) || {}; },
-  saveAffiliates(data) { this.set(this.AFFILIATES, data); },
-  getAffiliate(id) { return this.getAffiliates()[id] || null; },
+  // ── Affiliates ──
+  getAffiliates()       { return this._get('affiliates') || {}; },
+  saveAffiliates(data)  { this._set('affiliates', data); },
+  getAffiliate(id)      { return this.getAffiliates()[id] || null; },
   saveAffiliate(id, data) {
     const all = this.getAffiliates();
     all[id] = data;
     this.saveAffiliates(all);
   },
 
-  // --- Links ---
-  getLinks() { return this.get(this.LINKS) || {}; },
-  saveLinks(data) { this.set(this.LINKS, data); },
-  getLink(id) { return this.getLinks()[id] || null; },
+  // ── Links ──
+  getLinks()            { return this._get('links') || {}; },
+  saveLinks(data)       { this._set('links', data); },
+  getLink(id)           { return this.getLinks()[id] || null; },
   saveLink(id, data) {
     const all = this.getLinks();
     all[id] = data;
     this.saveLinks(all);
   },
 
-  // --- Clicks ---
-  getClicks() { return this.get(this.CLICKS) || []; },
+  // ── Clicks ──
+  getClicks()           { return this._get('clicks') || []; },
   addClick(click) {
     const all = this.getClicks();
-    all.unshift(click); // plus récent en premier
-    if (all.length > 5000) all.pop(); // limite mémoire
-    this.set(this.CLICKS, all);
+    all.unshift(click);
+    if (all.length > 5000) all.pop();
+    this._set('clicks', all);
   },
-  getClicksForLink(linkId) {
-    return this.getClicks().filter(c => c.linkId === linkId);
-  },
-  getClicksForAffiliate(affId) {
-    return this.getClicks().filter(c => c.affId === affId);
-  },
+  getClicksForLink(linkId)      { return this.getClicks().filter(c => c.linkId === linkId); },
+  getClicksForAffiliate(affId)  { return this.getClicks().filter(c => c.affId === affId); },
 
-  // --- Withdrawals ---
-  getWithdrawals() { return this.get(this.WITHDRAWALS) || []; },
+  // ── Withdrawals ──
+  getWithdrawals()      { return this._get('withdrawals') || []; },
   addWithdrawal(w) {
     const all = this.getWithdrawals();
     all.unshift(w);
-    this.set(this.WITHDRAWALS, all);
+    this._set('withdrawals', all);
   },
   updateWithdrawal(id, changes) {
     const all = this.getWithdrawals();
     const idx = all.findIndex(w => w.id === id);
-    if (idx !== -1) { all[idx] = { ...all[idx], ...changes }; this.set(this.WITHDRAWALS, all); }
+    if (idx !== -1) { all[idx] = { ...all[idx], ...changes }; this._set('withdrawals', all); }
   },
   getWithdrawalsForAffiliate(affId) {
     return this.getWithdrawals().filter(w => w.affId === affId);
   },
 
-  // --- Earnings log ---
-  getEarnings() { return this.get(this.EARNINGS) || []; },
+  // ── Earnings ──
+  getEarnings()         { return this._get('earnings') || []; },
   addEarning(e) {
     const all = this.getEarnings();
     all.unshift(e);
-    this.set(this.EARNINGS, all);
+    this._set('earnings', all);
   },
   getEarningsForAffiliate(affId) {
     return this.getEarnings().filter(e => e.affId === affId);
   },
 
-  // --- Génération d'ID unique ---
+  // ── Utilitaires ──
   generateId() {
     return Math.random().toString(36).substr(2, 9) + Date.now().toString(36);
   },
 
-  // --- Détection plateforme ---
   detectPlatform() {
     const ua = navigator.userAgent;
     if (/iPad|iPhone|iPod/.test(ua) && !window.MSStream) return 'iOS';
@@ -102,12 +116,10 @@ const DB = {
     return 'PC';
   },
 
-  // --- Calcul revenus depuis clics ---
   computeEarned(clicks, rate) {
-    return Math.floor(clicks / 1000) * (rate || this.DEFAULT_RATE);
+    return Math.floor(clicks / 1000) * (rate || 5);
   },
 
-  // --- Formatage date ---
   formatDate(ts) {
     return new Date(ts).toLocaleString('fr-FR', {
       day: '2-digit', month: '2-digit', year: 'numeric',

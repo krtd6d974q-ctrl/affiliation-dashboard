@@ -1,0 +1,12 @@
+{
+  "name": "crush-affi",
+  "version": "1.0.0",
+  "description": "Crush Affi — Panneau d'affiliation",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js"
+  },
+  "dependencies": {
+    "express": "4.19.2"
+  }
+}
