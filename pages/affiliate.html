@@ -2,23 +2,308 @@
 <html lang="fr">
 <head>
   <meta charset="UTF-8" /><meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Mon espace — Crushet</title>
+  <title>Mon espace — Crush Affi</title>
   <link rel="preconnect" href="https://fonts.googleapis.com" />
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet" />
   <link rel="stylesheet" href="../css/style.css" />
+  <style>
+    /* ---- PAGE LOGIN CUSTOM ---- */
+    .aff-login-screen {
+      min-height: 100vh;
+      display: flex;
+      align-items: stretch;
+      background: #0a0a0a;
+      overflow: hidden;
+    }
+
+    /* Colonne gauche — branding */
+    .aff-login-left {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      padding: 60px 64px;
+      position: relative;
+      overflow: hidden;
+    }
+
+    /* Cercles décoratifs en fond */
+    .aff-login-left::before {
+      content: '';
+      position: absolute;
+      width: 500px; height: 500px;
+      border-radius: 50%;
+      background: radial-gradient(circle, rgba(138,253,58,.15) 0%, transparent 70%);
+      top: -100px; left: -100px;
+      pointer-events: none;
+    }
+    .aff-login-left::after {
+      content: '';
+      position: absolute;
+      width: 350px; height: 350px;
+      border-radius: 50%;
+      background: radial-gradient(circle, rgba(138,253,58,.08) 0%, transparent 70%);
+      bottom: -60px; right: -60px;
+      pointer-events: none;
+    }
+
+    .aff-brand-tag {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      background: rgba(138,253,58,.1);
+      border: 1px solid rgba(138,253,58,.25);
+      border-radius: 99px;
+      padding: 6px 14px;
+      font-size: .75rem;
+      font-weight: 700;
+      color: #8afd3a;
+      letter-spacing: .06em;
+      text-transform: uppercase;
+      margin-bottom: 32px;
+      width: fit-content;
+    }
+    .aff-brand-tag span {
+      width: 6px; height: 6px;
+      border-radius: 50%;
+      background: #8afd3a;
+      animation: pulse 1.8s infinite;
+    }
+
+    .aff-login-title {
+      font-size: 3rem;
+      font-weight: 900;
+      color: #fff;
+      line-height: 1.1;
+      letter-spacing: -1.5px;
+      margin-bottom: 20px;
+    }
+    .aff-login-title em {
+      font-style: normal;
+      color: #8afd3a;
+    }
+
+    .aff-login-desc {
+      font-size: .95rem;
+      color: #666;
+      line-height: 1.7;
+      max-width: 380px;
+      margin-bottom: 40px;
+    }
+
+    .aff-app-link {
+      display: inline-flex;
+      align-items: center;
+      gap: 12px;
+      background: #151515;
+      border: 1px solid #2a2a2a;
+      border-radius: 14px;
+      padding: 14px 18px;
+      text-decoration: none;
+      transition: border-color .15s, background .15s;
+      width: fit-content;
+    }
+    .aff-app-link:hover {
+      border-color: rgba(138,253,58,.3);
+      background: #1a1a1a;
+    }
+    .aff-app-link-icon {
+      width: 40px; height: 40px;
+      border-radius: 10px;
+      background: linear-gradient(135deg, #8afd3a, #4db800);
+      display: flex; align-items: center; justify-content: center;
+      font-size: 1.2rem;
+      flex-shrink: 0;
+    }
+    .aff-app-link-text {
+      display: flex;
+      flex-direction: column;
+    }
+    .aff-app-link-label {
+      font-size: .68rem;
+      color: #555;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: .05em;
+    }
+    .aff-app-link-name {
+      font-size: .9rem;
+      color: #fff;
+      font-weight: 700;
+      margin-top: 1px;
+    }
+
+    /* Colonne droite — formulaire */
+    .aff-login-right {
+      width: 440px;
+      flex-shrink: 0;
+      background: #fff;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      padding: 60px 48px;
+      border-radius: 28px 0 0 28px;
+      position: relative;
+    }
+
+    .aff-form-logo {
+      font-size: 1.1rem;
+      font-weight: 900;
+      color: #0a0a0a;
+      letter-spacing: -.5px;
+      margin-bottom: 36px;
+    }
+    .aff-form-logo span { color: #8afd3a; }
+
+    .aff-form-title {
+      font-size: 1.5rem;
+      font-weight: 800;
+      color: #0a0a0a;
+      letter-spacing: -.5px;
+      margin-bottom: 6px;
+    }
+    .aff-form-sub {
+      font-size: .87rem;
+      color: #999;
+      margin-bottom: 36px;
+    }
+
+    .aff-field { margin-bottom: 18px; }
+    .aff-field label {
+      display: block;
+      font-size: .74rem;
+      font-weight: 700;
+      color: #aaa;
+      text-transform: uppercase;
+      letter-spacing: .06em;
+      margin-bottom: 8px;
+    }
+    .aff-field input {
+      width: 100%;
+      padding: 14px 16px;
+      border: 2px solid #ebebeb;
+      border-radius: 12px;
+      background: #fafafa;
+      color: #0a0a0a;
+      font-size: .95rem;
+      font-family: inherit;
+      transition: border .15s, box-shadow .15s, background .15s;
+    }
+    .aff-field input:focus {
+      outline: none;
+      border-color: #8afd3a;
+      background: #fff;
+      box-shadow: 0 0 0 4px rgba(138,253,58,.15);
+    }
+
+    .aff-btn-login {
+      width: 100%;
+      padding: 15px;
+      background: #0a0a0a;
+      color: #8afd3a;
+      border: none;
+      border-radius: 12px;
+      font-size: .95rem;
+      font-weight: 800;
+      cursor: pointer;
+      font-family: inherit;
+      letter-spacing: -.2px;
+      transition: background .15s, transform .1s;
+      margin-top: 4px;
+    }
+    .aff-btn-login:hover {
+      background: #1a1a1a;
+      transform: translateY(-1px);
+    }
+    .aff-btn-login:active { transform: translateY(0); }
+
+    .aff-error {
+      color: #dc2626;
+      font-size: .82rem;
+      font-weight: 600;
+      margin-top: 12px;
+      text-align: center;
+    }
+
+    .aff-footer-note {
+      margin-top: 32px;
+      padding-top: 24px;
+      border-top: 1px solid #f0f0f0;
+      font-size: .78rem;
+      color: #bbb;
+      text-align: center;
+      line-height: 1.6;
+    }
+    .aff-footer-note a {
+      color: #8afd3a;
+      text-decoration: none;
+      font-weight: 700;
+    }
+
+    /* Mobile */
+    @media (max-width: 768px) {
+      .aff-login-screen { flex-direction: column; }
+      .aff-login-left {
+        padding: 48px 28px 36px;
+        flex: none;
+      }
+      .aff-login-title { font-size: 2rem; }
+      .aff-login-right {
+        width: 100%;
+        border-radius: 24px 24px 0 0;
+        padding: 40px 28px 48px;
+        flex: 1;
+      }
+      .aff-app-link { display: none; }
+    }
+  </style>
 </head>
 <body>
-  <div id="login-screen" class="auth-screen">
-    <div class="auth-card">
-      <div class="auth-brand">Crushet</div>
-      <h1>Mon espace</h1>
-      <p class="auth-subtitle">Connecte-toi pour voir tes statistiques</p>
-      <div class="field"><label>Email</label>
-        <input type="email" id="f-email" placeholder="ton@email.com" onkeydown="if(event.key==='Enter')login()" />
-      </div>
-      <button class="btn-block" onclick="login()">Se connecter</button>
-      <p id="err" class="auth-error hidden">Aucun compte trouvé avec cet email</p>
+
+  <div id="login-screen" class="aff-login-screen">
+
+    <!-- Gauche : branding -->
+    <div class="aff-login-left">
+      <div class="aff-brand-tag"><span></span>Programme affilié</div>
+
+      <h1 class="aff-login-title">
+        Gagne de l'argent<br>avec <em>Crush</em>
+      </h1>
+      <p class="aff-login-desc">
+        Partage ton lien, génère des clics, encaisse tes gains. Simple, transparent, automatique.
+      </p>
+
+      <a href="https://apps.apple.com/us/app/crush-assistant-drague/id6783893349" target="_blank" class="aff-app-link">
+        <div class="aff-app-link-icon">💬</div>
+        <div class="aff-app-link-text">
+          <span class="aff-app-link-label">Disponible sur</span>
+          <span class="aff-app-link-name">Crush — Assistant drague</span>
+        </div>
+      </a>
     </div>
+
+    <!-- Droite : formulaire -->
+    <div class="aff-login-right">
+      <div class="aff-form-logo">Crush <span>Affi</span></div>
+
+      <h2 class="aff-form-title">Ton espace affilié</h2>
+      <p class="aff-form-sub">Connecte-toi avec ton adresse email</p>
+
+      <div class="aff-field">
+        <label>Adresse email</label>
+        <input type="email" id="f-email" placeholder="ton@email.com"
+               onkeydown="if(event.key==='Enter')login()" />
+      </div>
+
+      <button class="aff-btn-login" onclick="login()">Accéder à mon espace →</button>
+      <p id="err" class="aff-error hidden">Aucun compte trouvé avec cet email</p>
+
+      <div class="aff-footer-note">
+        Pas encore affilié ?<br>
+        Contacte-nous pour rejoindre le programme et commencer à gagner.
+      </div>
+    </div>
+
   </div>
 
   <div id="app"></div>
@@ -73,7 +358,7 @@
       return `
         <div class="mob-nav-wrap" id="mob-nav-wrap">
           <header class="mob-header">
-            <span class="mob-brand">Crushet</span>
+            <span class="mob-brand">Crush Affi</span>
             <button class="mob-burger" id="burger" onclick="toggleMenu()"><span></span><span></span><span></span></button>
           </header>
           <div class="mob-menu" id="mob-menu">
@@ -85,7 +370,7 @@
         <div class="overlay" id="overlay" onclick="closeMenu()"></div>
         <div class="app">
           <aside class="sidebar" id="sidebar">
-            <div class="sidebar-brand">Crushet <small>Espace affilié</small></div>
+            <div class="sidebar-brand">Crush Affi <small>Espace affilié</small></div>
             <div class="sidebar-user">
               <div class="sidebar-user-name">${a.name}</div>
               <div class="sidebar-user-email">${a.email}</div>

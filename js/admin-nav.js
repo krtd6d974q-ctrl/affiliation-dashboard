@@ -66,7 +66,7 @@ function renderShell(activePage, contentHTML) {
   document.body.innerHTML = `
     <div class="mob-nav-wrap" id="mob-nav-wrap">
       <header class="mob-header">
-        <span class="mob-brand">Crushet</span>
+        <span class="mob-brand">Crush Affi</span>
         <button class="mob-burger" id="burger" onclick="toggleMenu()">
           <span></span><span></span><span></span>
         </button>
@@ -80,7 +80,7 @@ function renderShell(activePage, contentHTML) {
     <div class="overlay" id="overlay" onclick="closeMenu()"></div>
     <div class="app">
       <aside class="sidebar" id="sidebar">
-        <div class="sidebar-brand">Crushet <small>Admin</small></div>
+        <div class="sidebar-brand">Crush Affi <small>Admin</small></div>
         <nav>${navHTML}</nav>
         <div class="sidebar-footer">
           <button class="btn-logout" onclick="adminLogout()">Déconnexion</button>
