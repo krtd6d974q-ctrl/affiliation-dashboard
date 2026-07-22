@@ -1,28 +1,25 @@
 <!DOCTYPE html>
 <html lang="fr">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta charset="UTF-8" /><meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Liens — AffiliTrack</title>
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
   <link rel="stylesheet" href="../css/style.css" />
 </head>
 <body>
-  <div id="app"></div>
   <script src="../js/data.js"></script>
   <script src="../js/admin-nav.js"></script>
   <script>
     checkAdminAuth();
 
-    function getTrackUrl(id) {
-      const base = location.origin + location.pathname.replace('pages/links.html','');
-      return base + 'pages/track.html?lid=' + id;
+    function trackUrl(id) {
+      return location.origin + location.pathname.replace('pages/links.html','') + 'pages/track.html?lid=' + id;
     }
 
     function copyLink(id) {
-      navigator.clipboard.writeText(getTrackUrl(id)).then(() => {
-        const btn = document.getElementById('copy-' + id);
+      navigator.clipboard.writeText(trackUrl(id)).then(() => {
+        const btn = document.getElementById('cpbtn-'+id);
         btn.textContent = 'Copié !';
         setTimeout(() => btn.textContent = 'Copier', 2000);
       });
@@ -30,42 +27,34 @@
 
     function render() {
       const links = DB.getLinks();
-      const affiliates = DB.getAffiliates();
+      const affs  = DB.getAffiliates();
       const entries = Object.entries(links);
 
       const rowsHTML = entries.length === 0
-        ? `<tr><td colspan="7" class="table-empty">Aucun lien — <a href="create.html">Créer un lien</a></td></tr>`
-        : entries.map(([id, link]) => {
-            const aff = affiliates[link.affId];
-            const url = getTrackUrl(id);
+        ? `<tr><td colspan="6" class="td-empty">Aucun lien — <a href="create.html">Créer un affilié</a> pour en générer un</td></tr>`
+        : entries.map(([id, l]) => {
+            const a = affs[l.affId];
             return `<tr>
-              <td><code>${id.substring(0,10)}…</code></td>
-              <td><strong>${aff ? aff.name : 'Inconnu'}</strong></td>
-              <td><a href="${link.target}" target="_blank" class="link-url">${link.target.substring(0,28)}…</a></td>
-              <td>${(link.clicks||0).toLocaleString('fr-FR')}</td>
-              <td>${DB.computeEarned(link.clicks||0, link.rate).toFixed(2)} €</td>
-              <td>${DB.formatDate(link.createdAt)}</td>
-              <td><button id="copy-${id}" class="btn-sm" onclick="copyLink('${id}')">Copier</button></td>
+              <td><a href="affiliate-detail.html?id=${l.affId}" style="color:var(--accent);text-decoration:none;font-weight:600">${a?a.name:'Inconnu'}</a></td>
+              <td><a href="${l.target}" target="_blank" class="link-ext">${l.target.length>32?l.target.substring(0,32)+'…':l.target}</a></td>
+              <td>${(l.clicks||0).toLocaleString('fr-FR')}</td>
+              <td>${DB.computeEarned(l.clicks||0,l.rate).toFixed(2)} €</td>
+              <td>${DB.formatDate(l.createdAt)}</td>
+              <td><button id="cpbtn-${id}" class="btn btn-secondary btn-sm" onclick="copyLink('${id}')">Copier</button></td>
             </tr>`;
           }).join('');
 
-      const content = `
-        <div class="page-header"><h2>Liens de tracking</h2><p>${entries.length} lien(s) actif(s)</p></div>
-        <div class="table-wrap">
-          <table>
-            <thead><tr><th>ID</th><th>Affilié</th><th>URL cible</th><th>Clics</th><th>Revenus</th><th>Créé le</th><th></th></tr></thead>
-            <tbody>${rowsHTML}</tbody>
-          </table>
-        </div>
-        <div style="margin-top:20px">
-          <a href="create.html" class="btn-primary">+ Créer un nouveau lien</a>
-        </div>`;
-
-      document.getElementById('app').innerHTML = buildMobileHeader() + `
-        <div class="app-layout">
-          ${buildSidebar('links')}
-          <main class="content">${content}</main>
-        </div>`;
+      renderShell('links', `
+        <p class="page-title">Liens de tracking</p>
+        <p class="page-desc">${entries.length} lien(s) actif(s)</p>
+        <div class="card">
+          <div class="tbl-wrap">
+            <table>
+              <thead><tr><th>Affilié</th><th>URL cible</th><th>Clics</th><th>Revenus</th><th>Créé le</th><th></th></tr></thead>
+              <tbody>${rowsHTML}</tbody>
+            </table>
+          </div>
+        </div>`);
     }
 
     window.addEventListener('DOMContentLoaded', render);

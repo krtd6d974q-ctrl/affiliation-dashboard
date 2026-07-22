@@ -1,205 +1,352 @@
 <!DOCTYPE html>
 <html lang="fr">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta charset="UTF-8" /><meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Mon espace — AffiliTrack</title>
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
   <link rel="stylesheet" href="../css/style.css" />
 </head>
 <body>
-
-  <!-- LOGIN -->
-  <div id="aff-login-screen" class="auth-screen">
-    <div class="auth-box">
-      <div class="auth-logo">AffiliTrack</div>
-      <h1>Espace Affilié</h1>
-      <p class="subtitle">Connectez-vous pour voir vos statistiques</p>
-      <input type="text" id="aff-login-id" placeholder="Votre ID ou email" />
-      <input type="password" id="aff-login-pass" placeholder="Mot de passe" />
-      <button onclick="affLogin()">Connexion</button>
-      <p id="aff-login-error" class="error hidden">ID ou mot de passe incorrect</p>
+  <div id="login-screen" class="auth-screen">
+    <div class="auth-card">
+      <div class="auth-brand">AffiliTrack</div>
+      <h1>Mon espace</h1>
+      <p class="auth-subtitle">Connectez-vous pour voir vos statistiques</p>
+      <div class="field"><label>Email</label>
+        <input type="email" id="f-email" placeholder="votre@email.com" />
+      </div>
+      <div class="field"><label>Mot de passe</label>
+        <input type="password" id="f-pass" placeholder="••••••••" onkeydown="if(event.key==='Enter')login()" />
+      </div>
+      <button class="btn-block" onclick="login()">Se connecter</button>
+      <p id="err" class="auth-error hidden">Email ou mot de passe incorrect</p>
     </div>
   </div>
 
-  <!-- MOBILE HEADER -->
-  <header class="mobile-header hidden" id="mobile-header">
-    <span class="mobile-logo">Mon espace</span>
-    <button class="hamburger" id="hamburger" onclick="toggleMenu()">
-      <span></span><span></span><span></span>
-    </button>
-  </header>
-  <div class="overlay" id="overlay" onclick="closeMenu()"></div>
-
-  <!-- DASHBOARD -->
-  <div id="aff-dashboard" class="app-layout hidden">
-    <aside class="sidebar" id="sidebar">
-      <div class="sidebar-top">
-        <div class="logo">AffiliTrack <span>Espace affilié</span></div>
-      </div>
-      <div class="affiliate-info">
-        <p id="aff-display-name" class="aff-name"></p>
-        <p id="aff-display-id" class="aff-id-label"></p>
-      </div>
-      <nav>
-        <span class="nav-section">Suivi</span>
-        <button class="nav-item active" onclick="affShowTab('aff-stats',this)">
-          <svg class="nav-icon" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"/></svg>
-          Statistiques
-        </button>
-        <button class="nav-item" onclick="affShowTab('aff-earnings',this)">
-          <svg class="nav-icon" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-2.21 0-4 1.343-4 3s1.79 3 4 3 4 1.343 4 3-1.79 3-4 3m0-18v2m0 16v2"/></svg>
-          Revenus
-        </button>
-        <span class="nav-section">Actions</span>
-        <button class="nav-item" onclick="affShowTab('aff-withdraw',this)">
-          <svg class="nav-icon" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 9V7a5 5 0 00-10 0v2a2 2 0 00-2 2v6a2 2 0 002 2h10a2 2 0 002-2v-6a2 2 0 00-2-2z"/></svg>
-          Retrait
-        </button>
-        <button class="nav-item" onclick="affShowTab('aff-payment',this)">
-          <svg class="nav-icon" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"/><circle cx="12" cy="12" r="3"/></svg>
-          Paiement
-        </button>
-      </nav>
-      <div class="sidebar-bottom">
-        <button class="logout-btn" onclick="affLogout()">Déconnexion</button>
-      </div>
-    </aside>
-
-    <main class="content">
-
-      <!-- STATS -->
-      <section id="tab-aff-stats" class="tab active">
-        <div class="live-badge"><span class="live-dot"></span>Temps réel</div>
-        <div class="page-header"><h2>Mes statistiques</h2></div>
-        <div class="stats-grid">
-          <div class="stat-card accent">
-            <div class="stat-label">Total clics</div>
-            <div class="stat-value" id="aff-total-clicks">0</div>
-          </div>
-          <div class="stat-card green">
-            <div class="stat-label">Revenus totaux</div>
-            <div class="stat-value" id="aff-total-earned">0 €</div>
-          </div>
-          <div class="stat-card green">
-            <div class="stat-label">Solde disponible</div>
-            <div class="stat-value" id="aff-balance">0 €</div>
-          </div>
-          <div class="stat-card">
-            <div class="stat-label">Prochain palier</div>
-            <div class="stat-value" id="aff-next-milestone">1 000</div>
-            <div class="stat-sub">clics</div>
-          </div>
-        </div>
-
-        <div class="section-card">
-          <div class="section-title">Mon lien de tracking</div>
-          <div class="link-copy" style="max-width:520px">
-            <input type="text" id="aff-my-link" readonly />
-            <button onclick="copyMyLink()">Copier</button>
-          </div>
-        </div>
-
-        <div class="section-card">
-          <div class="section-title">Progression vers le prochain gain</div>
-          <div class="progress-container">
-            <div class="progress-bar-wrap">
-              <div class="progress-bar" id="aff-progress-bar" style="width:0%"></div>
-            </div>
-            <p id="aff-progress-text">0 / 1000 clics</p>
-          </div>
-        </div>
-
-        <div class="section-card">
-          <div class="section-title">Répartition plateformes</div>
-          <div id="aff-platforms"></div>
-        </div>
-
-        <div class="section-card">
-          <div class="section-title">Clics récents</div>
-          <div id="aff-click-history" class="activity-list"></div>
-        </div>
-      </section>
-
-      <!-- EARNINGS -->
-      <section id="tab-aff-earnings" class="tab hidden">
-        <div class="page-header"><h2>Mes revenus</h2></div>
-        <div class="earnings-summary">
-          <div class="earning-row"><span>Revenus totaux générés</span><strong id="earn-total">0 €</strong></div>
-          <div class="earning-row"><span>Déjà retiré</span><strong id="earn-withdrawn">0 €</strong></div>
-          <div class="earning-row"><span>Solde disponible</span><strong id="earn-balance">0 €</strong></div>
-        </div>
-        <p class="rate-info">Taux : <strong id="earn-rate">5 €</strong> par 1 000 clics</p>
-        <div class="section-card">
-          <div class="section-title">Historique des gains</div>
-          <div id="earnings-history" class="activity-list"></div>
-        </div>
-        <div class="section-card">
-          <div class="section-title">Historique des retraits</div>
-          <div id="withdrawals-history" class="activity-list"></div>
-        </div>
-      </section>
-
-      <!-- WITHDRAWAL -->
-      <section id="tab-aff-withdraw" class="tab hidden">
-        <div class="page-header"><h2>Demande de retrait</h2></div>
-        <div id="withdraw-form-area">
-          <div class="form-card">
-            <div class="balance-display">Solde disponible : <strong id="withdraw-balance">0 €</strong></div>
-            <div class="form-group"><label>Montant à retirer (€)</label>
-              <input type="number" id="withdraw-amount" placeholder="Ex : 25" min="1" step="0.01" /></div>
-            <div class="form-group"><label>Méthode de paiement</label>
-              <select id="withdraw-method" onchange="updateWithdrawMethod()">
-                <option value="">-- Choisir --</option>
-                <option value="paypal">PayPal</option>
-                <option value="virement">Virement bancaire (IBAN)</option>
-                <option value="crypto">Crypto</option>
-              </select></div>
-            <div id="withdraw-details" class="hidden">
-              <p id="withdraw-method-info" class="method-info"></p>
-            </div>
-            <button class="btn-primary" onclick="requestWithdrawal()">Demander le retrait</button>
-          </div>
-        </div>
-        <div id="withdraw-success" class="success-box hidden">
-          <p>Demande envoyée ! L'admin a été notifié et traitera votre retrait rapidement.</p>
-          <button onclick="affShowTab('aff-stats', null)">Retour aux stats</button>
-        </div>
-        <div class="section-card" style="margin-top:24px">
-          <div class="section-title">Mes demandes</div>
-          <div id="my-withdrawals" class="activity-list"></div>
-        </div>
-      </section>
-
-      <!-- PAYMENT -->
-      <section id="tab-aff-payment" class="tab hidden">
-        <div class="page-header"><h2>Informations de paiement</h2></div>
-        <div class="form-card">
-          <h3>PayPal</h3>
-          <div class="form-group"><label>Adresse PayPal</label>
-            <input type="email" id="pay-paypal" placeholder="votre@paypal.com" /></div>
-          <h3>Virement bancaire</h3>
-          <div class="form-group"><label>Prénom</label>
-            <input type="text" id="pay-firstname" placeholder="Prénom" /></div>
-          <div class="form-group"><label>Nom</label>
-            <input type="text" id="pay-lastname" placeholder="Nom de famille" /></div>
-          <div class="form-group"><label>IBAN</label>
-            <input type="text" id="pay-iban" placeholder="FR76 XXXX XXXX XXXX" /></div>
-          <h3>Crypto</h3>
-          <div class="form-group"><label>Adresse de wallet</label>
-            <input type="text" id="pay-crypto" placeholder="0x... ou bc1..." /></div>
-          <div class="form-group"><label>Réseau</label>
-            <input type="text" id="pay-crypto-network" placeholder="Ex : Ethereum ERC-20" /></div>
-          <button class="btn-primary" onclick="savePaymentInfo()">Enregistrer</button>
-          <p id="payment-saved-msg" class="success-msg hidden">Informations enregistrées</p>
-        </div>
-      </section>
-
-    </main>
-  </div>
+  <div id="app"></div>
 
   <script src="../js/data.js"></script>
-  <script src="../js/affiliate.js"></script>
+  <script>
+    const AFF_KEY = 'aff_session';
+    let currentId = null;
+
+    // Pré-remplir l'email depuis l'URL ?id=xxx
+    window.addEventListener('DOMContentLoaded', () => {
+      const urlId = new URLSearchParams(location.search).get('id');
+      if (urlId) {
+        const a = DB.getAffiliate(urlId);
+        if (a) document.getElementById('f-email').value = a.email;
+      }
+      const saved = sessionStorage.getItem(AFF_KEY);
+      if (saved && DB.getAffiliate(saved)) { currentId = saved; showDashboard(); }
+    });
+
+    function login() {
+      const email = document.getElementById('f-email').value.trim();
+      const pass  = document.getElementById('f-pass').value;
+      const found = Object.entries(DB.getAffiliates()).find(([,a]) => a.email===email && a.password===pass);
+      if (!found) { document.getElementById('err').classList.remove('hidden'); return; }
+      currentId = found[0];
+      sessionStorage.setItem(AFF_KEY, currentId);
+      showDashboard();
+    }
+
+    function logout() { sessionStorage.removeItem(AFF_KEY); location.reload(); }
+
+    function buildAffNav(activePage) {
+      const pages = [
+        { id:'stats',    label:'Mes stats',   href:'#', group:'Suivi' },
+        { id:'earnings', label:'Revenus',      href:'#', group:'Suivi' },
+        { id:'withdraw', label:'Retrait',      href:'#', group:'Action' },
+        { id:'payment',  label:'Paiement',     href:'#', group:'Action' },
+      ];
+      let lastG = '';
+      const nav = pages.map(p => {
+        let out = '';
+        if (p.group !== lastG) { out += `<div class="nav-group">${p.group}</div>`; lastG = p.group; }
+        out += `<a href="#" class="nav-link ${activePage===p.id?'active':''}" onclick="showPage('${p.id}');event.preventDefault()">${p.label}</a>`;
+        return out;
+      }).join('');
+      const a = DB.getAffiliate(currentId);
+      return `
+        <header class="mob-header" id="mob-header">
+          <span class="mob-brand">Mon espace</span>
+          <button class="mob-burger" id="burger" onclick="toggleMenu()"><span></span><span></span><span></span></button>
+        </header>
+        <div class="overlay" id="overlay" onclick="closeMenu()"></div>
+        <div class="app">
+          <aside class="sidebar" id="sidebar">
+            <div class="sidebar-brand">AffiliTrack <small>Espace affilié</small></div>
+            <div class="sidebar-user">
+              <div class="sidebar-user-name">${a.name}</div>
+              <div class="sidebar-user-email">${a.email}</div>
+            </div>
+            <nav>${nav}</nav>
+            <div class="sidebar-footer">
+              <button class="btn-logout" onclick="logout()">Déconnexion</button>
+            </div>
+          </aside>
+          <main class="main" id="page-content"></main>
+        </div>`;
+    }
+
+    function toggleMenu() {
+      document.getElementById('sidebar').classList.toggle('open');
+      document.getElementById('burger').classList.toggle('open');
+      document.getElementById('overlay').classList.toggle('show');
+    }
+    function closeMenu() {
+      document.getElementById('sidebar').classList.remove('open');
+      document.getElementById('burger').classList.remove('open');
+      document.getElementById('overlay').classList.remove('show');
+    }
+
+    let currentPage = 'stats';
+    let realtimeTimer = null;
+
+    function showDashboard() {
+      document.getElementById('login-screen').style.display = 'none';
+      document.getElementById('app').style.display = 'block';
+      showPage('stats');
+    }
+
+    function showPage(page) {
+      currentPage = page;
+      const a = DB.getAffiliate(currentId);
+      document.getElementById('app').innerHTML = buildAffNav(page);
+      if (page==='stats')    renderStats(a);
+      if (page==='earnings') renderEarnings(a);
+      if (page==='withdraw') renderWithdraw(a);
+      if (page==='payment')  renderPayment(a);
+      clearInterval(realtimeTimer);
+      realtimeTimer = setInterval(() => {
+        const fresh = DB.getAffiliate(currentId);
+        if (currentPage==='stats')    renderStats(fresh);
+        if (currentPage==='earnings') renderEarnings(fresh);
+      }, 4000);
+    }
+
+    function setContent(html) {
+      document.getElementById('page-content').innerHTML = html;
+    }
+
+    // ---- STATS ----
+    function renderStats(a) {
+      const clicks  = DB.getClicksForAffiliate(currentId);
+      const total   = a.clicks || 0;
+      const earned  = a.earned || 0;
+      const balance = a.balance || 0;
+      const rate    = getRate();
+      const inCycle = total % 1000;
+      const pct     = (inCycle/1000)*100;
+      const next    = (Math.floor(total/1000)+1)*1000;
+      const myLink  = Object.entries(DB.getLinks()).find(([,l]) => l.affId===currentId);
+      const trackUrl = myLink ? location.origin + location.pathname.replace('pages/affiliate.html','') + 'pages/track.html?lid=' + myLink[0] : '';
+
+      const platforms = {iOS:0, Android:0, PC:0};
+      clicks.forEach(c => { if(platforms[c.platform]!==undefined) platforms[c.platform]++; });
+      const colors = {iOS:'#6366f1', Android:'#10b981', PC:'#f59e0b'};
+      const barsHTML = clicks.length===0
+        ? '<p style="color:var(--text-muted);font-size:.83rem">Aucun clic enregistré</p>'
+        : Object.entries(platforms).map(([n,c]) => {
+            const p = Math.round((c/clicks.length)*100);
+            return `<div class="platform-row"><span class="platform-name">${n}</span><div class="bar-track"><div class="bar-fill" style="width:${p}%;background:${colors[n]}"></div></div><span class="platform-pct">${c} — ${p}%</span></div>`;
+          }).join('');
+
+      const recentHTML = clicks.slice(0,10).map(c =>
+        `<div class="activity-item"><span class="plat-tag plat-${c.platform.toLowerCase()}">${c.platform}</span><span class="activity-time">${DB.formatDate(c.ts)}</span></div>`
+      ).join('') || '<p style="color:var(--text-muted);font-size:.83rem;padding:10px 0">Aucun clic</p>';
+
+      setContent(`
+        <span class="live-label"><span class="live-dot"></span>Temps réel</span>
+        <p class="page-title">Mes statistiques</p>
+        <p class="page-desc">Taux : ${rate} € par 1 000 clics</p>
+        <div class="stats-row">
+          <div class="stat-box"><div class="stat-box-label">Total clics</div><div class="stat-box-value accent">${total.toLocaleString('fr-FR')}</div></div>
+          <div class="stat-box"><div class="stat-box-label">Revenus gagnés</div><div class="stat-box-value green">${earned.toFixed(2)} €</div></div>
+          <div class="stat-box"><div class="stat-box-label">Solde dispo</div><div class="stat-box-value">${balance.toFixed(2)} €</div></div>
+        </div>
+
+        ${trackUrl ? `
+        <div class="card">
+          <div class="card-head"><span class="card-title">Mon lien de tracking</span></div>
+          <div class="card-body">
+            <div class="copy-row">
+              <input id="my-link" value="${trackUrl}" readonly />
+              <button class="btn btn-secondary btn-sm" onclick="copyMyLink()">Copier</button>
+            </div>
+          </div>
+        </div>` : '<div class="card"><div class="card-body" style="color:var(--text-muted);font-size:.85rem">Aucun lien actif — demandez à votre admin de vous en générer un.</div></div>'}
+
+        <div class="card">
+          <div class="card-head"><span class="card-title">Progression vers le prochain gain</span></div>
+          <div class="card-body">
+            <div class="progress-wrap"><div class="progress-fill" style="width:${pct}%"></div></div>
+            <p class="progress-label">${inCycle.toLocaleString('fr-FR')} / 1 000 clics — prochain gain : +${rate} € au palier ${next.toLocaleString('fr-FR')}</p>
+          </div>
+        </div>
+
+        <div class="card">
+          <div class="card-head"><span class="card-title">Plateformes</span></div>
+          <div class="card-body">${barsHTML}</div>
+        </div>
+
+        <div class="card">
+          <div class="card-head"><span class="card-title">Clics récents</span></div>
+          <div class="card-body">${recentHTML}</div>
+        </div>`);
+    }
+
+    function copyMyLink() {
+      const val = document.getElementById('my-link').value;
+      navigator.clipboard.writeText(val).then(() => {
+        const btn = document.querySelector('#my-link + button');
+        btn.textContent = 'Copié !'; setTimeout(()=>btn.textContent='Copier',2000);
+      });
+    }
+
+    function getRate() {
+      const l = Object.values(DB.getLinks()).find(l => l.affId===currentId);
+      return l ? (l.rate||5) : 5;
+    }
+
+    // ---- EARNINGS ----
+    function renderEarnings(a) {
+      const earned = a.earned||0, balance = a.balance||0;
+      const withdrawn = Math.max(0, earned - balance);
+      const earnings = DB.getEarningsForAffiliate(currentId);
+      const withdrawals = DB.getWithdrawalsForAffiliate(currentId);
+
+      const earnRows = earnings.length===0
+        ? '<p style="color:var(--text-muted);font-size:.83rem;padding:10px 0">Aucun gain encore — partagez votre lien pour commencer</p>'
+        : earnings.map(e => `<div class="activity-item"><span class="balance-pill">+${e.amount.toFixed(2)} €</span><span>Palier ${e.clicks.toLocaleString('fr-FR')} clics</span><span class="activity-time">${DB.formatDate(e.ts)}</span></div>`).join('');
+
+      const wRows = withdrawals.length===0
+        ? '<p style="color:var(--text-muted);font-size:.83rem;padding:10px 0">Aucun retrait</p>'
+        : withdrawals.map(w => {
+            const [cls,lbl] = {pending:['badge-pending','En attente'],done:['badge-done','Traité'],rejected:['badge-rejected','Refusé']}[w.status]||['',''];
+            return `<div class="activity-item"><span style="color:var(--red);font-weight:700;font-size:.82rem">-${w.amount.toFixed(2)} €</span><span>{{paypal:'PayPal',virement:'Virement',crypto:'Crypto'}[w.method]||w.method}</span><span class="badge-status ${cls}">${lbl}</span><span class="activity-time">${DB.formatDate(w.ts)}</span></div>`;
+          }).join('');
+
+      setContent(`
+        <p class="page-title">Mes revenus</p>
+        <p class="page-desc">Taux : ${getRate()} € par 1 000 clics</p>
+        <div class="card">
+          <div class="card-body">
+            <div style="display:flex;flex-direction:column;gap:0">
+              <div style="display:flex;justify-content:space-between;padding:12px 0;border-bottom:1px solid var(--border);font-size:.9rem"><span style="color:var(--text-muted)">Revenus totaux générés</span><strong>${earned.toFixed(2)} €</strong></div>
+              <div style="display:flex;justify-content:space-between;padding:12px 0;border-bottom:1px solid var(--border);font-size:.9rem"><span style="color:var(--text-muted)">Déjà retiré</span><strong>${withdrawn.toFixed(2)} €</strong></div>
+              <div style="display:flex;justify-content:space-between;padding:12px 0;font-size:1rem"><span style="color:var(--accent);font-weight:600">Solde disponible</span><strong style="color:var(--accent)">${balance.toFixed(2)} €</strong></div>
+            </div>
+          </div>
+        </div>
+        <div class="card"><div class="card-head"><span class="card-title">Historique des gains</span></div><div class="card-body">${earnRows}</div></div>
+        <div class="card"><div class="card-head"><span class="card-title">Historique des retraits</span></div><div class="card-body">${wRows}</div></div>`);
+    }
+
+    // ---- WITHDRAW ----
+    function renderWithdraw(a) {
+      const balance = a.balance||0;
+      const pay = a.paymentInfo||{};
+      setContent(`
+        <p class="page-title">Demande de retrait</p>
+        <p class="page-desc">Solde disponible : <strong>${balance.toFixed(2)} €</strong></p>
+        <div id="withdraw-form">
+          <div class="form-card">
+            <div class="form-section">Montant</div>
+            <div class="form-row"><label>Montant à retirer (€)</label><input id="w-amount" type="number" min="1" step="0.01" placeholder="Ex : 25" /></div>
+            <div class="form-section">Méthode</div>
+            <div class="form-row"><label>Méthode de paiement</label>
+              <select id="w-method" onchange="updateMethodInfo()">
+                <option value="">-- Choisir --</option>
+                <option value="paypal">PayPal</option>
+                <option value="virement">Virement bancaire</option>
+                <option value="crypto">Crypto</option>
+              </select>
+            </div>
+            <div id="method-info" style="margin-bottom:14px"></div>
+            <button class="btn btn-primary" onclick="submitWithdraw()">Envoyer la demande</button>
+          </div>
+        </div>
+        <div id="withdraw-ok" style="display:none" class="success-box">
+          <h3>Demande envoyée</h3>
+          <p>L'admin a été notifié et traitera votre retrait rapidement.</p>
+          <button class="btn btn-secondary" style="margin-top:12px" onclick="showPage('stats')">Retour aux stats</button>
+        </div>`);
+    }
+
+    function updateMethodInfo() {
+      const method = document.getElementById('w-method').value;
+      const a = DB.getAffiliate(currentId);
+      const pay = a.paymentInfo||{};
+      const el = document.getElementById('method-info');
+      if (!method) { el.innerHTML=''; return; }
+      const configured = { paypal: pay.paypal, virement: pay.iban, crypto: pay.wallet };
+      if (configured[method]) {
+        const txt = method==='paypal' ? pay.paypal
+          : method==='virement' ? `${pay.firstname} ${pay.lastname} — ${pay.iban}`
+          : `${pay.wallet} (${pay.cryptoNetwork})`;
+        el.innerHTML = `<p style="font-size:.82rem;padding:10px 12px;background:var(--green-light);border-radius:var(--radius-sm);color:var(--green)">Vers : <strong>${txt}</strong></p>`;
+      } else {
+        el.innerHTML = `<p style="font-size:.82rem;padding:10px 12px;background:var(--yellow-light);border-radius:var(--radius-sm);color:var(--yellow)">Aucune info configurée — <a href="#" onclick="showPage('payment');event.preventDefault()" style="color:var(--yellow);font-weight:700">Configurer maintenant</a></p>`;
+      }
+    }
+
+    function submitWithdraw() {
+      const amount = parseFloat(document.getElementById('w-amount').value);
+      const method = document.getElementById('w-method').value;
+      const a = DB.getAffiliate(currentId);
+      if (!amount||amount<=0) { alert('Montant invalide'); return; }
+      if (!method) { alert('Choisissez une méthode'); return; }
+      if (amount > (a.balance||0)) { alert(`Solde insuffisant (${(a.balance||0).toFixed(2)} €)`); return; }
+      const pay = a.paymentInfo||{};
+      DB.addWithdrawal({ id:DB.generateId(), affId:currentId, amount, method, status:'pending',
+        ts:Date.now(), paypal:pay.paypal||'', firstname:pay.firstname||'', lastname:pay.lastname||'',
+        iban:pay.iban||'', wallet:pay.wallet||'', network:pay.cryptoNetwork||'' });
+      a.balance = (a.balance||0) - amount;
+      DB.saveAffiliate(currentId, a);
+      document.getElementById('withdraw-form').style.display = 'none';
+      document.getElementById('withdraw-ok').style.display = 'block';
+    }
+
+    // ---- PAYMENT ----
+    function renderPayment(a) {
+      const p = a.paymentInfo||{};
+      setContent(`
+        <p class="page-title">Informations de paiement</p>
+        <p class="page-desc">Configurez vos coordonnées pour les retraits</p>
+        <div class="form-card">
+          <div class="form-section">PayPal</div>
+          <div class="form-row"><label>Adresse PayPal</label><input id="p-paypal" type="email" placeholder="vous@paypal.com" value="${p.paypal||''}" /></div>
+          <div class="form-section">Virement bancaire</div>
+          <div class="form-row"><label>Prénom</label><input id="p-firstname" type="text" placeholder="Prénom" value="${p.firstname||''}" /></div>
+          <div class="form-row"><label>Nom</label><input id="p-lastname" type="text" placeholder="Nom" value="${p.lastname||''}" /></div>
+          <div class="form-row"><label>IBAN</label><input id="p-iban" type="text" placeholder="FR76 …" value="${p.iban||''}" /></div>
+          <div class="form-section">Crypto</div>
+          <div class="form-row"><label>Adresse wallet</label><input id="p-wallet" type="text" placeholder="0x…" value="${p.wallet||''}" /></div>
+          <div class="form-row"><label>Réseau</label><input id="p-network" type="text" placeholder="Ethereum ERC-20" value="${p.cryptoNetwork||''}" /></div>
+          <div style="display:flex;gap:10px;margin-top:6px">
+            <button class="btn btn-primary" onclick="savePayment()">Enregistrer</button>
+          </div>
+          <p id="pay-ok" style="color:var(--green);font-size:.8rem;margin-top:10px;display:none">Enregistré</p>
+        </div>`);
+    }
+
+    function savePayment() {
+      const a = DB.getAffiliate(currentId);
+      a.paymentInfo = {
+        paypal: document.getElementById('p-paypal').value.trim(),
+        firstname: document.getElementById('p-firstname').value.trim(),
+        lastname: document.getElementById('p-lastname').value.trim(),
+        iban: document.getElementById('p-iban').value.trim(),
+        wallet: document.getElementById('p-wallet').value.trim(),
+        cryptoNetwork: document.getElementById('p-network').value.trim(),
+      };
+      DB.saveAffiliate(currentId, a);
+      document.getElementById('pay-ok').style.display = 'block';
+      setTimeout(() => document.getElementById('pay-ok').style.display='none', 3000);
+    }
+  </script>
 </body>
 </html>

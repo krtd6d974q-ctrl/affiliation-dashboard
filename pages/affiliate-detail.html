@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8" /><meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Fiche affilié — AffiliTrack</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="../css/style.css" />
+</head>
+<body>
+  <script src="../js/data.js"></script>
+  <script src="../js/admin-nav.js"></script>
+  <script>
+    checkAdminAuth();
+    const affId = new URLSearchParams(location.search).get('id');
+
+    function getTrackUrl(linkId) {
+      return location.origin + location.pathname.replace('pages/affiliate-detail.html','') + 'pages/track.html?lid=' + linkId;
+    }
+    function getAffUrl() {
+      return location.origin + location.pathname.replace('pages/affiliate-detail.html','') + 'pages/affiliate.html?id=' + affId;
+    }
+
+    function copy(id) {
+      const el = document.getElementById(id);
+      navigator.clipboard.writeText(el.value).then(() => {
+        const btn = document.querySelector(`[data-for="${id}"]`);
+        if (btn) { btn.textContent='Copié !'; setTimeout(()=>btn.textContent='Copier',2000); }
+      });
+    }
+
+    function generateLink() {
+      const target = document.getElementById('link-target').value.trim();
+      const rate   = parseFloat(document.getElementById('link-rate').value) || 5;
+      if (!target) { document.getElementById('link-target').focus(); return; }
+
+      // Supprime l'ancien lien de cet affilié s'il en avait un
+      const allLinks = DB.getLinks();
+      Object.entries(allLinks).forEach(([lid, l]) => {
+        if (l.affId === affId) { delete allLinks[lid]; }
+      });
+      DB.saveLinks(allLinks);
+
+      const linkId = DB.generateId();
+      DB.saveLink(linkId, { id:linkId, affId, target, rate, clicks:0, createdAt:Date.now() });
+
+      render(); // re-render pour afficher les liens générés
+    }
+
+    function deleteAffiliate() {
+      if (!confirm('Supprimer cet affilié et toutes ses données ?')) return;
+      const affs = DB.getAffiliates(); delete affs[affId]; DB.saveAffiliates(affs);
+      const links = DB.getLinks();
+      Object.entries(links).forEach(([lid,l]) => { if(l.affId===affId) delete links[lid]; });
+      DB.saveLinks(links);
+      location.href = 'affiliates.html';
+    }
+
+    function render() {
+      const aff = DB.getAffiliate(affId);
+      if (!aff) { location.href = 'affiliates.html'; return; }
+
+      const myLink = Object.entries(DB.getLinks()).find(([,l]) => l.affId === affId);
+      const clicks = DB.getClicksForAffiliate(affId);
+      const platforms = {iOS:0, Android:0, PC:0};
+      clicks.forEach(c => { if(platforms[c.platform]!==undefined) platforms[c.platform]++; });
+      const colors = {iOS:'#6366f1', Android:'#10b981', PC:'#f59e0b'};
+
+      const barsHTML = clicks.length === 0
+        ? '<p style="color:var(--text-muted);font-size:.83rem">Aucun clic</p>'
+        : Object.entries(platforms).map(([n,c]) => {
+            const pct = Math.round((c/clicks.length)*100);
+            return `<div class="platform-row"><span class="platform-name">${n}</span><div class="bar-track"><div class="bar-fill" style="width:${pct}%;background:${colors[n]}"></div></div><span class="platform-pct">${c} — ${pct}%</span></div>`;
+          }).join('');
+
+      const linkSection = myLink ? `
+        <div class="success-box" style="margin-bottom:18px">
+          <h3>Lien actif</h3>
+          <p>Lien de tracking :</p>
+          <div class="copy-row" style="margin-bottom:10px">
+            <input id="out-track" value="${getTrackUrl(myLink[0])}" readonly />
+            <button class="btn btn-secondary btn-sm" data-for="out-track" onclick="copy('out-track')">Copier</button>
+          </div>
+          <p>Dashboard affilié :</p>
+          <div class="copy-row">
+            <input id="out-aff" value="${getAffUrl()}" readonly />
+            <button class="btn btn-secondary btn-sm" data-for="out-aff" onclick="copy('out-aff')">Copier</button>
+          </div>
+        </div>` : '';
+
+      const genForm = `
+        <div class="card">
+          <div class="card-head"><span class="card-title">${myLink ? 'Regénérer le lien' : 'Générer un lien'}</span></div>
+          <div class="card-body">
+            <div class="form-row"><label>URL de destination (votre app)</label>
+              <input id="link-target" type="url" placeholder="https://monapp.com" value="${myLink ? myLink[1].target : ''}" /></div>
+            <div class="form-row"><label>Taux — € par 1 000 clics</label>
+              <input id="link-rate" type="number" value="${myLink ? myLink[1].rate : 5}" min="1" /></div>
+            <button class="btn btn-primary" onclick="generateLink()">${myLink ? 'Regénérer' : 'Générer le lien'}</button>
+          </div>
+        </div>`;
+
+      renderShell('affiliates', `
+        <div style="display:flex;align-items:center;gap:12px;margin-bottom:6px">
+          <a href="affiliates.html" style="color:var(--text-muted);text-decoration:none;font-size:.82rem">Affiliés</a>
+          <span style="color:var(--text-light)">/</span>
+          <span style="font-size:.82rem;color:var(--text)">${aff.name}</span>
+        </div>
+        <p class="page-title">${aff.name}</p>
+        <p class="page-desc">${aff.email} — Affilié depuis le ${DB.formatDate(aff.createdAt)}</p>
+
+        <div class="stats-row" style="margin-bottom:20px">
+          <div class="stat-box"><div class="stat-box-label">Clics totaux</div><div class="stat-box-value accent">${(aff.clicks||0).toLocaleString('fr-FR')}</div></div>
+          <div class="stat-box"><div class="stat-box-label">Revenus générés</div><div class="stat-box-value green">${(aff.earned||0).toFixed(2)} €</div></div>
+          <div class="stat-box"><div class="stat-box-label">Solde disponible</div><div class="stat-box-value">${(aff.balance||0).toFixed(2)} €</div></div>
+        </div>
+
+        ${linkSection}
+        ${genForm}
+
+        <div class="card" style="margin-top:18px">
+          <div class="card-head"><span class="card-title">Plateformes</span></div>
+          <div class="card-body">${barsHTML}</div>
+        </div>
+
+        <div style="margin-top:24px">
+          <button class="btn btn-red btn-sm" onclick="deleteAffiliate()">Supprimer cet affilié</button>
+        </div>`);
+    }
+
+    window.addEventListener('DOMContentLoaded', () => {
+      if (!affId) { location.href = 'affiliates.html'; return; }
+      render();
+      setInterval(render, 5000);
+    });
+  </script>
+</body>
+</html>
