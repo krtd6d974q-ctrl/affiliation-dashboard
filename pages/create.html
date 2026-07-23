@@ -13,45 +13,62 @@
   <script>
     checkAdminAuth();
 
+    window.addEventListener('DOMContentLoaded', () => {
+      renderShell('create', `
+        <p class="page-title">Créer un affilié</p>
+        <p class="page-desc">Remplissez les informations — vous pourrez ensuite générer son lien depuis sa fiche</p>
+        <div class="form-card">
+          <div class="form-section">Informations</div>
+          <div class="form-row"><label>Nom complet</label><input id="f-name" type="text" placeholder="Jean Dupont" /></div>
+          <div class="form-row"><label>Email</label><input id="f-email" type="email" placeholder="jean@exemple.com" onkeydown="if(event.key==='Enter')createAffiliate()" /></div>
+          <div style="margin-top:20px;display:flex;gap:10px">
+            <button class="btn btn-primary" id="create-btn" onclick="createAffiliate()">Créer l'affilié</button>
+            <a href="affiliates.html" class="btn btn-secondary">Annuler</a>
+          </div>
+          <p id="create-err" style="color:var(--red);font-size:.82rem;margin-top:10px;display:none"></p>
+        </div>`, 0);
+    });
+
     async function createAffiliate() {
       const name  = document.getElementById('f-name').value.trim();
       const email = document.getElementById('f-email').value.trim();
-      document.querySelectorAll('.field-err').forEach(e => e.remove());
-      if (!name)  { addErr('f-name','Requis');  return; }
-      if (!email) { addErr('f-email','Requis'); return; }
+      const errEl = document.getElementById('create-err');
+      const btn   = document.getElementById('create-btn');
 
-      const btn = document.querySelector('.btn-primary');
+      errEl.style.display = 'none';
+      if (!name)  { errEl.textContent = 'Le nom est requis';   errEl.style.display='block'; return; }
+      if (!email) { errEl.textContent = 'L\'email est requis'; errEl.style.display='block'; return; }
+
       btn.disabled = true;
       btn.textContent = 'Création...';
 
-      const affs = await DB.getAffiliates();
-      const existing = Object.values(affs).find(a => a.email === email);
-      if (existing) { addErr('f-email','Cet email est déjà utilisé'); btn.disabled=false; btn.textContent='Créer l\'affilié'; return; }
+      try {
+        const affs = await DB.getAffiliates();
+        const existing = Object.values(affs).find(a => a.email.toLowerCase() === email.toLowerCase());
+        if (existing) {
+          errEl.textContent = 'Cet email est déjà utilisé';
+          errEl.style.display = 'block';
+          btn.disabled = false;
+          btn.textContent = 'Créer l\'affilié';
+          return;
+        }
 
-      const id = DB.generateId();
-      await DB.saveAffiliate(id, { id, name, email, clicks:0, earned:0, balance:0, createdAt: Date.now() });
-      location.href = 'affiliate-detail.html?id=' + id;
+        const id = DB.generateId();
+        await DB.saveAffiliate(id, {
+          id, name, email,
+          clicks: 0, earned: 0, balance: 0,
+          createdAt: Date.now()
+        });
+
+        location.href = 'affiliate-detail.html?id=' + id;
+      } catch(e) {
+        console.error(e);
+        errEl.textContent = 'Erreur lors de la création. Réessaie.';
+        errEl.style.display = 'block';
+        btn.disabled = false;
+        btn.textContent = 'Créer l\'affilié';
+      }
     }
-
-    function addErr(fieldId, msg) {
-      const el = document.getElementById(fieldId);
-      const p = document.createElement('p');
-      p.className = 'field-err'; p.textContent = msg;
-      el.insertAdjacentElement('afterend', p);
-    }
-
-    renderShell('create', `
-      <p class="page-title">Créer un affilié</p>
-      <p class="page-desc">Remplissez les informations — vous pourrez ensuite générer son lien depuis sa fiche</p>
-      <div class="form-card">
-        <div class="form-section">Informations</div>
-        <div class="form-row"><label>Nom complet</label><input id="f-name" type="text" placeholder="Jean Dupont" /></div>
-        <div class="form-row"><label>Email (utilisé pour se connecter)</label><input id="f-email" type="email" placeholder="jean@exemple.com" /></div>
-        <div style="margin-top:20px;display:flex;gap:10px">
-          <button class="btn btn-primary" onclick="createAffiliate()">Créer l'affilié</button>
-          <a href="affiliates.html" class="btn btn-secondary">Annuler</a>
-        </div>
-      </div>`);
   </script>
 </body>
 </html>
