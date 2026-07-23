@@ -77,7 +77,53 @@ const DB = {
     await this._req(table, 'DELETE', null, `id=eq.${id}`);
   },
 
-  invalidate(table) {
+  // ── Realtime subscription via Supabase WebSocket ──
+  // callback(table, event, row) — event: INSERT | UPDATE | DELETE
+  subscribe(tables, callback) {
+    const wsUrl = SUPABASE_URL.replace('https://', 'wss://') + '/realtime/v1/websocket?apikey=' + SUPABASE_KEY + '&vsn=1.0.0';
+    const ws = new WebSocket(wsUrl);
+    let heartbeat;
+
+    ws.onopen = () => {
+      // Rejoindre un channel par table
+      tables.forEach(table => {
+        ws.send(JSON.stringify({
+          topic: `realtime:public:${table}`,
+          event: 'phx_join',
+          payload: {},
+          ref: table,
+        }));
+      });
+      // Heartbeat toutes les 25s pour garder la connexion vivante
+      heartbeat = setInterval(() => {
+        ws.send(JSON.stringify({ topic: 'phoenix', event: 'heartbeat', payload: {}, ref: null }));
+      }, 25000);
+    };
+
+    ws.onmessage = (e) => {
+      try {
+        const msg = JSON.parse(e.data);
+        if (msg.event === 'phx_reply' || msg.event === 'heartbeat') return;
+        if (msg.payload?.type) {
+          const table = msg.topic.replace('realtime:public:', '');
+          const row   = msg.payload.record || msg.payload.old_record || {};
+          // Invalide le cache pour forcer une relecture
+          if (this._cache[table] !== undefined) delete this._cache[table];
+          callback(table, msg.payload.type, row);
+        }
+      } catch {}
+    };
+
+    ws.onclose = () => {
+      clearInterval(heartbeat);
+      // Reconnexion automatique après 3s
+      setTimeout(() => this.subscribe(tables, callback), 3000);
+    };
+
+    ws.onerror = () => ws.close();
+
+    return ws;
+  },
     if (table) delete this._cache[table];
     else this._cache = {};
   },
