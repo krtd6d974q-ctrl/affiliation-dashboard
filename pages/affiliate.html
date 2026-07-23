@@ -47,12 +47,36 @@
     #loader .brand { font-size: 1.3rem; font-weight: 900; color: var(--accent); letter-spacing: -.5px; }
     #loader .spin  { width: 30px; height: 30px; border: 3px solid #222; border-top-color: var(--accent); border-radius: 50%; animation: spin .7s linear infinite; }
 
-    /* ── LOGIN mobile fix ── */
-    #login-screen { min-height:100vh; display:flex; align-items:stretch; background:#0a0a0a; }
+    /* ── LOGIN ── */
+    #login-screen {
+      min-height: 100vh; display: flex; background: #0a0a0a;
+    }
+    .login-left {
+      flex: 1; display: flex; flex-direction: column; justify-content: center;
+      padding: 64px 72px; position: relative; overflow: hidden;
+    }
     .login-left::before {
       content:''; position:absolute; width:700px; height:700px; border-radius:50%;
       background: radial-gradient(circle, rgba(138,253,58,.1) 0%, transparent 65%);
       top:-200px; left:-200px; pointer-events:none;
+    }
+    .login-right {
+      width: 460px; flex-shrink: 0; background: #0d0d0d;
+      border-left: 1px solid #1a1a1a;
+      display: flex; flex-direction: column; justify-content: center;
+      padding: 64px 52px;
+    }
+    @media (max-width: 860px) {
+      .login-left  { display: none; }
+      .login-right {
+        width: 100%; border-left: none;
+        min-height: 100vh; padding: 56px 28px 64px;
+        background: #0a0a0a;
+        justify-content: center;
+      }
+    }
+    @media (max-width: 420px) {
+      .login-right { padding: 44px 20px 56px; }
     }
     .l-pill {
       display:inline-flex; align-items:center; gap:8px;
@@ -75,26 +99,6 @@
     .tg-icon { width:42px; height:42px; border-radius:11px; background:#229ed9; display:flex; align-items:center; justify-content:center; flex-shrink:0; }
     .tg-label { font-size:.63rem; color:#555; font-weight:600; text-transform:uppercase; letter-spacing:.05em; }
     .tg-name  { font-size:.88rem; color:#fff; font-weight:700; margin-top:2px; }
-    .login-right {
-      width:460px; flex-shrink:0; background:#0d0d0d;
-      border-left:1px solid #1a1a1a;
-      display:flex; flex-direction:column; justify-content:center;
-      padding:64px 52px;
-    }
-    @media (max-width: 900px) {
-      .login-left { display:none; }
-      .login-right {
-        width:100%; border-left:none;
-        min-height:100vh;
-        display:flex; flex-direction:column; justify-content:center;
-        padding:52px 28px 60px;
-        background:#0a0a0a;
-      }
-    }
-    @media (max-width: 480px) {
-      .login-right { padding:40px 20px 52px; }
-      .lf-title    { font-size:1.4rem; }
-    }
     .lf-logo { font-size:1.1rem; font-weight:900; color:#fff; letter-spacing:-.5px; margin-bottom:44px; }
     .lf-logo span { color:var(--accent); }
     .lf-title { font-size:1.6rem; font-weight:900; color:#fff; letter-spacing:-.6px; margin-bottom:6px; }
