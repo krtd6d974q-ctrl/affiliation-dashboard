@@ -560,34 +560,25 @@ async function showDashboard() {
   // Snapshot des retraits pour détecter les changements de statut
   let _lastWithdrawals = JSON.stringify(await DB.getWithdrawalsForAffiliate(currentId));
 
-  // ── Realtime : écoute les changements en direct ──
-  DB.subscribe(['affiliates', 'withdrawals', 'clicks'], async (table, event, row) => {
-    // Mise à jour du hero à chaque changement sur affiliates ou clicks
-    if (table === 'affiliates' || table === 'clicks') {
-      await refreshHero();
-      if (currentTab === 'stats')   await renderStats();
-      if (currentTab === 'revenus') await renderRevenus();
-    }
+  realtimeTimer = setInterval(async () => {
+    DB.invalidate('affiliates'); DB.invalidate('links'); DB.invalidate('clicks'); DB.invalidate('withdrawals');
+    await refreshHero();
+    if (currentTab === 'stats')   await renderStats();
+    if (currentTab === 'revenus') await renderRevenus();
 
-    // Notif si un retrait change de statut
-    if (table === 'withdrawals' && event === 'UPDATE') {
-      const prevList = JSON.parse(_lastWithdrawals);
-      const old = prevList.find(x => x.id === row.id);
-      if (old && old.status === 'pending' && row.data?.status === 'done') {
-        showNotif('Retrait validé', `${(row.data.amount||0).toFixed(2)} € ont été traités.`, 'green');
-        await refreshHero();
-        if (currentTab === 'revenus') await renderRevenus();
-      }
-      if (old && old.status === 'pending' && row.data?.status === 'rejected') {
-        showNotif('Retrait refusé', `Ton retrait de ${(row.data.amount||0).toFixed(2)} € a été refusé.`, 'red');
-        await refreshHero();
-        if (currentTab === 'revenus') await renderRevenus();
-      }
-      // Mettre à jour le snapshot
-      const newW = await DB.getWithdrawalsForAffiliate(currentId);
-      _lastWithdrawals = JSON.stringify(newW);
+    // Notif si un retrait vient d'être traité
+    const newW = await DB.getWithdrawalsForAffiliate(currentId);
+    const newSnapshot = JSON.stringify(newW);
+    if (newSnapshot !== _lastWithdrawals) {
+      const prev = JSON.parse(_lastWithdrawals);
+      newW.forEach(w => {
+        const old = prev.find(x => x.id === w.id);
+        if (old && old.status === 'pending' && w.status === 'done')     showNotif('Retrait validé', `${w.amount.toFixed(2)} € ont été traités.`, 'green');
+        if (old && old.status === 'pending' && w.status === 'rejected') showNotif('Retrait refusé', `Ton retrait de ${w.amount.toFixed(2)} € a été refusé.`, 'red');
+      });
+      _lastWithdrawals = newSnapshot;
     }
-  });
+  }, 7000);
 }
 
 async function refreshHero() {
