@@ -3,8 +3,8 @@
 // Toutes les données sont persistées dans Supabase
 // ============================================================
 
-const SUPABASE_URL = 'https://titrqeounaoxpjgtvcy.supabase.co';
-const SUPABASE_KEY = 'sb_publishable_JJ1J7KDX-npk66ZIB2AiWw_cFc5EXx8';
+const SUPABASE_URL = 'https://titrqeounaoxpjgtvvcy.supabase.co';
+const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InRpdHJxZW91bmFveHBqZ3R2dmN5Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODQ3NTM1NTksImV4cCI6MjEwMDMyOTU1OX0.ilPDZT79YmIZBFKpayGmHpr1CXtlKBjT9pv9Ryxi0VM';
 
 const DB = {
   DEFAULT_RATE: 5,
