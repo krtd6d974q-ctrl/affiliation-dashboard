@@ -456,6 +456,12 @@ const TABS = [
 
 // ── Boot ──
 window.addEventListener('DOMContentLoaded', async () => {
+  // Timeout de sécurité — si Supabase ne répond pas en 8s, affiche le login
+  const timeout = setTimeout(() => {
+    console.warn('[Boot] timeout — affichage login');
+    show('login-screen');
+  }, 8000);
+
   try {
     const urlId = new URLSearchParams(location.search).get('id');
     if (urlId) {
@@ -465,12 +471,16 @@ window.addEventListener('DOMContentLoaded', async () => {
     const saved = sessionStorage.getItem(AFF_KEY);
     if (saved) {
       const a = await DB.getAffiliate(saved);
+      clearTimeout(timeout);
       if (a) { currentId = saved; showDashboard(); return; }
     }
+    clearTimeout(timeout);
     show('login-screen');
   } catch(e) {
-    console.error(e);
-    showFatalError('Erreur de connexion à la base de données.');
+    clearTimeout(timeout);
+    console.error('[Boot]', e);
+    // Si erreur réseau → affiche quand même le login plutôt qu'un écran vide
+    show('login-screen');
   }
 });
 
