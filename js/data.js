@@ -124,6 +124,8 @@ const DB = {
 
     return ws;
   },
+
+  invalidate(table) {
     if (table) delete this._cache[table];
     else this._cache = {};
   },
